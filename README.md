@@ -1,4 +1,4 @@
-# Maxx Wever — Portfolio
+# Maxx Wever - Portfolio
 
 A small, hand-editable static website. No build step, no framework, no
 dependencies to install. Just plain HTML, CSS and JavaScript that you can
@@ -17,25 +17,16 @@ site/
 └── assets/         ← all images and videos live here
     ├── portrait.png
     ├── hero-poster.png
-    ├── zima-poster.png
-    ├── project-02-poster.png
-    └── project-03-poster.png
+    ├── project-01-poster.png
+    └── project-02-poster.png
 ```
 
-That's the whole site. More files aren't better — this is complete.
-
----
 
 ## How everything fits together
 
-- **`index.html`** is the skeleton. It has the fixed sections (hero, about,
-  experience, contact) written as normal HTML you can edit by hand. It has a
-  few empty "slots" that get filled in by `main.js`.
-- **`main.js`** holds your **content data** (your projects, your tags, the
-  ticker words) and builds the project cards + ticker from it. This is where
-  you'll spend 90% of your editing time.
-- **`styles.css`** controls how it all looks. The colours and animation speed
-  are defined once at the very top (`:root`) as variables.
+- **`index.html`** is the skeleton. It has the fixed sections (hero, about, experience, contact) written as normal HTML you can edit by hand. It has a few empty "slots" that get filled in by `main.js`.
+- **`main.js`** holds **content data** (projects, tags, ticker words) and builds the project cards + ticker from it. This is where 90% of editing time goes into.
+- **`styles.css`** controls how it all looks. The colors and animation speed are defined once at the very top (`:root`) as variables.
 
 ---
 
@@ -49,9 +40,9 @@ it, and edit the values:
 ```js
 {
   title:       'My New Game',
-  kicker:      '04 · SOLO',
+  kicker:      '01 · SOLO',
   description: 'A short sentence about what it is and what you did.',
-  tags:        ['systems', 'unity'],          // keys from the TAGS list
+  tags:        ['systems', 'unreal'],          // keys from the TAGS list
   poster:      'assets/my-new-game.png',       // put this image in assets/
   video:       '',                             // '' = image only for now
   link:        '#',                            // where clicking it goes
@@ -118,11 +109,11 @@ pick their own via the THEME button — those options live in `main.js`
 
 ## Editing directly on GitHub (no computer setup needed)
 
-1. Go to your repo on github.com and click the file you want to change
+1. Go to the repo on github.com and click the file you want to change
    (e.g. `main.js`).
 2. Click the ✏️ **pencil** icon (top right of the file).
 3. Make your edits.
-4. Scroll down and click **Commit changes**.
+4. Hit **Commit changes**.
 5. Your live site updates automatically in ~1 minute.
 
 To upload images/videos: open the `assets` folder → **Add file → Upload files**
