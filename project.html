@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project — Maxx Wever</title>
+  <meta name="description" content="Project detail — portfolio of Maxx Wever.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header (same bar as the home page) -->
+  <header class="site-header">
+    <a href="index.html" class="brand">MAXX WEVER</a>
+    <nav class="nav">
+      <a href="index.html#top">HOME</a>
+      <a href="index.html#work">PROJECTS</a>
+      <a href="index.html#about">ABOUT</a>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
+      <button id="themeBtn" class="theme-btn" aria-label="Site theme">
+        <span class="theme-dot"></span>THEME
+      </button>
+    </nav>
+  </header>
+
+  <div id="themePanel" class="theme-panel" hidden></div>
+
+  <!-- The whole project detail is built by app.js from data.js -->
+  <main id="projectDetail"></main>
+
+  <footer class="footer">
+    <span>© 2026 MAXX WEVER</span><span>BREDA, NL</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

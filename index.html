@@ -25,7 +25,7 @@
       <a href="#top">HOME</a>
       <a href="#work">PROJECTS</a>
       <a href="#about">ABOUT</a>
-      <a href="#contact">RESUME</a>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
       <button id="themeBtn" class="theme-btn" aria-label="Site theme">
         <span class="theme-dot"></span>THEME
       </button>
@@ -33,7 +33,7 @@
   </header>
 
   <!-- ============================================================
-       THEME PANEL  (built by main.js, toggled by the THEME button)
+       THEME PANEL  (built by app.js, toggled by the THEME button)
        ============================================================ -->
   <div id="themePanel" class="theme-panel" hidden></div>
 
@@ -49,7 +49,7 @@
     <div class="hero-scrim"></div>
 
     <div class="hero-content">
-      <p class="badge"><span class="badge-dot"></span>AVAILABLE FOR 2026 GRADUATE &amp; INTERN ROLES</p>
+      <p class="badge"><span class="badge-dot"></span>AVAILABLE IN 2027 FOR INTERNSHIP ROLES</p>
       <h1 class="hero-title">Technical<br>Game Designer<span class="accent-dot">.</span></h1>
       <p class="hero-tagline">I design and build the systems that make games feel good.</p>
       <div class="hero-cta">
@@ -59,39 +59,43 @@
   </section>
 
   <!-- ============================================================
-       SKILLS TICKER  (edit the words in main.js → TICKER_WORDS)
+       SKILLS TICKER  (edit the words in data.js → TICKER_WORDS)
        ============================================================ -->
   <div class="ticker">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
 
   <!-- ============================================================
-       SELECTED WORK  (cards are built by main.js from the PROJECTS list)
+       SELECTED WORK  (cards are built by app.js from PROJECTS in data.js)
        ============================================================ -->
-  <section id="work" class="section work">
-    <div class="section-head">
-      <h2 class="eyebrow">01 — SELECTED WORK</h2>
-      <span class="count" id="projectCount"></span>
+  <section id="work" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="eyebrow">01 — PROJECTS</h2>
+        <span class="count" id="projectCount"></span>
+      </div>
+
+      <!-- Featured project drops in here -->
+      <div id="featuredSlot"></div>
+
+      <!-- Remaining projects drop in here -->
+      <div class="project-grid" id="projectGrid"></div>
     </div>
-
-    <!-- Featured project drops in here -->
-    <div id="featuredSlot"></div>
-
-    <!-- Remaining projects drop in here -->
-    <div class="project-grid" id="projectGrid"></div>
   </section>
 
   <!-- ============================================================
        ABOUT
        ============================================================ -->
   <section id="about" class="section about">
-    <h2 class="eyebrow">02 — ABOUT</h2>
-    <div class="about-grid">
-      <img class="portrait" src="assets/portrait.png" alt="Portrait of Maxx Wever">
-      <div class="about-copy">
-        <p>I'm a game design professional specialized in 3Cs, combat and systemic gameplay design.</p>
-        <p>Currently in my third year studying at Breda University of Applied Sciences on the Creative Media &amp; Game Technologies course.</p>
-        <p>In my spare time, I enjoy working on small game projects to further develop my skill set as well as play as many games as I can.</p>
+    <div class="container">
+      <h2 class="eyebrow">02 — ABOUT</h2>
+      <div class="about-grid">
+        <img class="portrait" src="assets/portrait.png" alt="Portrait of Maxx Wever">
+        <div class="about-copy">
+          <p>I'm a game design professional specialized in 3Cs, combat and systemic gameplay design.</p>
+          <p>Currently in my third year studying at Breda University of Applied Sciences on the Creative Media &amp; Game Technologies course.</p>
+          <p>In my spare time, I enjoy working on small game projects to further develop my skill set as well as play as many games as I can.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -100,36 +104,38 @@
        EXPERIENCE  (edit rows directly below — plain HTML)
        ============================================================ -->
   <section id="experience" class="section experience">
-    <h2 class="eyebrow">03 — EXPERIENCE</h2>
-    <div class="exp-list">
+    <div class="container">
+      <h2 class="eyebrow">03 — EXPERIENCE</h2>
+      <div class="exp-list">
 
-      <div class="exp-row">
-        <span class="exp-year accent">2024 — NOW</span>
-        <div>
-          <div class="exp-title">Student</div>
-          <div class="exp-sub">Breda University of Applied Sciences (CMGT)</div>
+        <div class="exp-row">
+          <span class="exp-year accent">2024 — NOW</span>
+          <div>
+            <div class="exp-title">Student</div>
+            <div class="exp-sub">Breda University of Applied Sciences (CMGT)</div>
+          </div>
+          <span class="exp-tag">EDUCATION</span>
         </div>
-        <span class="exp-tag">EDUCATION</span>
-      </div>
 
-      <div class="exp-row">
-        <span class="exp-year">2024</span>
-        <div>
-          <div class="exp-title">Role / Title</div>
-          <div class="exp-sub">Studio or project — placeholder</div>
+        <div class="exp-row">
+          <span class="exp-year">2024</span>
+          <div>
+            <div class="exp-title">Role / Title</div>
+            <div class="exp-sub">Studio or project — placeholder</div>
+          </div>
+          <span class="exp-tag">DESIGN</span>
         </div>
-        <span class="exp-tag">DESIGN</span>
-      </div>
 
-      <div class="exp-row">
-        <span class="exp-year">2023</span>
-        <div>
-          <div class="exp-title">Role / Title</div>
-          <div class="exp-sub">Studio or project — placeholder</div>
+        <div class="exp-row">
+          <span class="exp-year">2023</span>
+          <div>
+            <div class="exp-title">Role / Title</div>
+            <div class="exp-sub">Studio or project — placeholder</div>
+          </div>
+          <span class="exp-tag">DESIGN</span>
         </div>
-        <span class="exp-tag">DESIGN</span>
-      </div>
 
+      </div>
     </div>
   </section>
 
@@ -137,12 +143,14 @@
        CONTACT
        ============================================================ -->
   <section id="contact" class="section contact">
-    <h2 class="eyebrow">04 — CONTACT</h2>
-    <h3 class="contact-title">Ask me<br>about<span class="accent"> anything.</span></h3>
-    <div class="contact-links">
-      <a class="btn btn-primary" href="mailto:MaxxDW@outlook.com">MaxxDW@outlook.com</a>
-      <a class="btn btn-ghost" href="https://www.linkedin.com/in/maxx-wever-9649b9290/">LINKEDIN ↗</a>
-      <a class="btn btn-ghost" href="https://maxxdw.itch.io/">ITCH.IO ↗</a>
+    <div class="container">
+      <h2 class="eyebrow">04 — CONTACT</h2>
+      <h3 class="contact-title">Ask me<br>about<span class="accent"> anything.</span></h3>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:MaxxDW@outlook.com">MaxxDW@outlook.com</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/maxx-wever-9649b9290/">LINKEDIN ↗</a>
+        <a class="btn btn-ghost" href="https://maxxdw.itch.io/">ITCH.IO ↗</a>
+      </div>
     </div>
   </section>
 
@@ -150,7 +158,8 @@
     <span>© 2026 MAXX WEVER</span><span>BREDA, NL</span>
   </footer>
 
-  <!-- Your logic (theme panel, projects, ticker) -->
-  <script src="main.js"></script>
+  <!-- Content (edit this) + engine (leave alone) -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

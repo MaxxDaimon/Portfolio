@@ -1,139 +1,185 @@
-# Maxx Wever - Portfolio
+# Portfolio — Editing Guide
 
-A small, hand-editable static website. No build step, no framework, no
-dependencies to install. Just plain HTML, CSS and JavaScript that you can
-edit in any text editor or directly in GitHub's web interface.
+A hand-editable static website: plain HTML, CSS and JavaScript. No build step,
+no framework, nothing to install. Files can be edited in any text editor or
+directly on GitHub.
 
 ---
 
-## The files
+## Files
 
 ```
-site/
-├── index.html      ← page structure (text you rarely change: hero, about, experience, contact)
-├── styles.css      ← all the styling (colours, spacing, fonts)
-├── main.js         ← the parts you'll edit most: PROJECTS, TAGS, ticker words, theme options
-├── README.md       ← this file
-└── assets/         ← all images and videos live here
-    ├── portrait.png
-    ├── hero-poster.png
-    ├── project-01-poster.png
-    └── project-02-poster.png
+index.html     The home page (hero, about, experience, contact)
+project.html   The template for every project's detail page (one file, reused)
+data.js        ALL content that changes: tags, projects, ticker words, theme
+app.js         The engine that renders data.js. Normally left alone
+styles.css     All styling. Default colours live at the top under :root
+assets/        All images and videos
 ```
 
+Almost all editing happens in **`data.js`**. A small file count is normal here.
 
-## How everything fits together
+---
 
-- **`index.html`** is the skeleton. It has the fixed sections (hero, about, experience, contact) written as normal HTML you can edit by hand. It has a few empty "slots" that get filled in by `main.js`.
-- **`main.js`** holds **content data** (projects, tags, ticker words) and builds the project cards + ticker from it. This is where 90% of editing time goes into.
-- **`styles.css`** controls how it all looks. The colors and animation speed are defined once at the very top (`:root`) as variables.
+## How the pages fit together
+
+- `index.html` shows the home page and the project cards.
+- Clicking a card opens `project.html?id=<slug>` — the **same** `project.html`
+  file, which looks up the matching project in `data.js` and fills itself in.
+  Adding a project never means creating a new page.
+- Both pages load `data.js` (the content) and `app.js` (the engine).
+
+---
+
+## Tags — how the type system works
+
+Tags live in `data.js` under `TAG_TYPES` and are grouped into **types**. Each
+type sets how many tags of that type a single project may carry:
+
+- `multiple: false` → pick **one**. Example: **Engine** — a project is either
+  Unreal *or* Unity, never both.
+- `multiple: true`  → pick **any number**. Example: **Focus**.
+
+Built-in types: **Team Size** (Solo / Team / Game Jam), **Engine**
+(Unreal / Unity / Godot), **Focus** (Systems Design, Combat, …).
+
+Add an option by adding a line inside a type's `options`. Add a whole new type
+by copying a type block. In every option the left side is the short key used by
+a project; the right side is the label shown on screen.
+
+A project chooses its tags per type:
+
+```js
+tags: { team: 'team', engine: 'unreal', focus: ['systems', 'combat'] }
+```
+
+Single-choice types take one key; multiple-choice types take a list. Leave a
+type out to show none of it.
+
+---
+
+## Featured vs. regular projects
+
+Each project has a `featured` field:
+
+- `featured: true`  → shown large as the wide 16:9 banner at the top.
+- `featured: false` → shown as a card in the grid below.
+
+Set one project to featured for the standard layout. The grid shows a running
+count of all projects; individual cards are **not** numbered.
 
 ---
 
 ## Common tasks
 
-### ➊ Add a new project
+### Add a project
 
-Open **`main.js`**, find the `PROJECTS` list, copy one `{ ... }` block, paste
-it, and edit the values:
+In `data.js`, copy any `{ ... }` block inside `PROJECTS`, paste it, and edit the
+values:
 
 ```js
 {
-  title:       'My New Game',
-  kicker:      '01 · SOLO',
-  description: 'A short sentence about what it is and what you did.',
-  tags:        ['systems', 'unreal'],          // keys from the TAGS list
-  poster:      'assets/my-new-game.png',       // put this image in assets/
-  video:       '',                             // '' = image only for now
-  link:        '#',                            // where clicking it goes
+  slug:        'game-name',            // unique id used in the page address
+  title:       'Game Name',
+  featured:    false,                  // true = big banner, false = grid card
+  description: 'One or two sentences shown on the card.',
+  tags:        { team: 'solo', engine: 'unity', focus: ['systems'] },
+  poster:      'assets/game-name.png', // image (place the file in assets/)
+  video:       '',                     // '' = image only; add an .mp4 path later
+  link:        '',                     // '' = use the built-in detail page
+
+  // Detail-page content (all optional — leave empty to skip that part)
+  year:         '2025',
+  summary:      'One intro paragraph for the detail page.',
+  contributions: ['What was done…', 'And more…'],
+  body:         ['A longer paragraph.', 'Another paragraph.'],
+  gallery:      ['assets/game-1.png', 'assets/game-2.png'],
 },
 ```
 
-- The **first** project in the list is always the big featured banner.
-- Everything after it becomes a card in the grid.
-- To reorder, move blocks up/down. To delete, remove the block.
+Remove a project by deleting its block. Reorder cards by moving blocks up or down.
 
-### ➋ Add or rename a tag
+Each `slug` must be unique — it is what the detail page uses to find the project.
+Set `link` to an external URL (e.g. an itch.io page) to send the card there
+instead of opening the detail page.
 
-In **`main.js`**, edit the `TAGS` list at the top:
+### Add an image
 
-```js
-const TAGS = {
-  systems: 'Systems Design',
-  audio:   'Audio Design',   // ← new tag; now you can use 'audio' in a project
-  ...
-};
-```
+1. Place the file in the `assets/` folder.
+2. Point a project's `poster` (or a `gallery` entry) at it, e.g.
+   `poster: 'assets/game-name.png'`.
 
-Then reference the key (`audio`) in any project's `tags` list.
+Keep images small (around 1600px wide, ideally under ~500 KB) for fast loading.
 
-### ➌ Add an image
+### Add a video
 
-1. Put the image file in the **`assets/`** folder (drag it into the `assets`
-   folder in GitHub, or copy it there on your computer).
-2. Point a project's `poster` at it, e.g. `poster: 'assets/my-image.png'`.
+A project shows its poster image until a video is supplied, then the video plays
+automatically (muted, looping) over the poster.
 
-Keep images reasonably small (ideally under ~500 KB, width around 1600px) so
-the site loads fast.
+1. Place the `.mp4` in `assets/` (e.g. `assets/zima.mp4`).
+2. Set that project's `video` to the path, e.g. `video: 'assets/zima.mp4'`.
 
-### ➍ Add a video
+Leave `video: ''` to keep showing only the poster. GitHub rejects single files
+larger than 100 MB, so keep clips short and compressed.
 
-Videos are optional. A project shows its **poster image** until you give it a
-video, then the video plays automatically (muted, looping) over the poster.
+### Edit fixed text (hero, about, experience)
 
-1. Put the `.mp4` in **`assets/`** (e.g. `assets/zima.mp4`).
-2. In that project, set `video: 'assets/zima.mp4'`.
+These are plain HTML in `index.html`, each under a labelled comment banner. The
+experience entries are `<div class="exp-row">…</div>` blocks — copy one to add
+another entry, edit the text between the tags, or delete a block to remove it.
 
-If you don't have a video yet, leave `video: ''` and only the poster shows.
-GitHub blocks single files larger than 100 MB, so keep clips short/compressed.
+### Change the ticker words
 
-### ➎ Edit the fixed text (about, experience, hero)
+In `data.js`, edit the `TICKER_WORDS` list. Add, remove, or reorder freely.
 
-These are plain HTML in **`index.html`**. Find the section (they're labelled
-with big comment banners) and edit the text between the tags. For example the
-experience rows are just `<div class="exp-row">…</div>` blocks — copy one to
-add another job/education entry.
+### Hero background rotation
 
-### ➏ Change the ticker words
+The large background behind the hero cycles through the projects' media (each
+project's poster now, its video once added). Edit `HERO` in `data.js`: set
+`rotate: false` to show only the first project's media, or change
+`intervalSeconds` to control how long each one stays before switching.
 
-In **`main.js`**, edit the `TICKER_WORDS` list.
+### Change default colours
 
-### ➐ Change colours
-
-In **`styles.css`**, edit the variables at the top under `:root`
-(`--accent`, `--bg`, etc.). These are the site's defaults. Visitors can also
-pick their own via the THEME button — those options live in `main.js`
-(`ACCENTS` and `MOODS`).
+In `styles.css`, edit the variables at the top under `:root` (`--accent`, `--bg`
+and so on). Visitors can also pick their own via the THEME button; the options
+offered there are `ACCENTS` and `MOODS` in `data.js` (the first accent is the
+default).
 
 ---
 
-## Editing directly on GitHub (no computer setup needed)
+## Editing directly on GitHub (no setup needed)
 
-1. Go to the repo on github.com and click the file you want to change
-   (e.g. `main.js`).
-2. Click the ✏️ **pencil** icon (top right of the file).
-3. Make your edits.
-4. Hit **Commit changes**.
-5. Your live site updates automatically in ~1 minute.
+1. Open the file on github.com and click the pencil icon (top right of the file).
+2. Make the edits.
+3. Click **Commit changes**. The live site updates in about a minute.
 
-To upload images/videos: open the `assets` folder → **Add file → Upload files**
-→ drag them in → **Commit**.
+To upload images or videos: open the `assets` folder → **Add file → Upload
+files** → drag the files in → **Commit**.
 
 ---
 
 ## Hosting (GitHub Pages)
 
-1. In your repo, go to **Settings → Pages**.
-2. Source: **Deploy from a branch**, branch **`main`**, folder **`/ (root)`**.
-   *(If your files are inside a `site/` folder, either move them to the repo
-   root, or set the folder to `/site` if GitHub offers it — root is simplest.)*
-3. Save. Your site goes live at `https://<username>.github.io/<repo>/`.
+GitHub Pages serves the site for free, no domain required.
+
+1. In the repository, go to **Settings → Pages**.
+2. Under **Source**, choose **Deploy from a branch**.
+3. Set the branch to **`main`** and the folder to **`/ (root)`**, then **Save**.
+4. Wait about a minute and refresh. A banner shows the live address, in the form
+   `https://<username>.github.io/<repository>/`.
+
+All files (`index.html`, `project.html`, `data.js`, `app.js`, `styles.css` and
+`assets/`) must sit at the level Pages serves from — with the `/ (root)` option
+that means the top level of the repository, not nested in another folder. A
+blank page almost always means the files are not at that level.
+
+A custom domain can be added later under **Settings → Pages → Custom domain**.
 
 ---
 
 ## Tips
 
-- **Test locally** by just double-clicking `index.html` — it opens in your
-  browser. (Videos referenced by path will load once they exist.)
-- **Back up** by keeping the repo — every commit is a restore point.
-- Keep the `assets/` filenames tidy and lowercase to avoid confusion.
+- Preview locally by double-clicking `index.html`; it opens in a browser.
+- Every commit is a restore point — the repository is the backup.
+- Keep `assets/` filenames lowercase and consistent to avoid broken links.
