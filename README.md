@@ -176,38 +176,23 @@ default).
 
 ---
 
-## Editing directly on GitHub (no setup needed)
+## Image sizes (what to crop posters to)
 
-1. Open the file on github.com and click the pencil icon (top right of the file).
-2. Make the edits.
-3. Click **Commit changes**. The live site updates in about a minute.
+Every image is displayed with `object-fit: cover`, so it fills its frame and
+crops overflow — match the **aspect ratio** and the exact pixels are flexible.
+Keep files under ~500 KB where possible for fast loading.
 
-To upload images or videos: open the `assets` folder → **Add file → Upload
-files** → drag the files in → **Commit**.
+| Where | Aspect ratio | Recommended size |
+|---|---|---|
+| Hero background (`assets/hero-poster.png`) | 16:9 | 1920 × 1080 |
+| Featured card (home) | 16:9 | 1600 × 900 |
+| Grid cards (home) | 16:9 | 1280 × 720 |
+| Project media (projects page) | 16:9 | 1600 × 900 |
+| Portrait (`assets/portrait.png`) | 1:1 (square) | 1000 × 1000 |
 
----
-
-## Hosting (GitHub Pages)
-
-GitHub Pages serves the site for free, no domain required.
-
-1. In the repository, go to **Settings → Pages**.
-2. Under **Source**, choose **Deploy from a branch**.
-3. Set the branch to **`main`** and the folder to **`/ (root)`**, then **Save**.
-4. Wait about a minute and refresh. A banner shows the live address, in the form
-   `https://<username>.github.io/<repository>/`.
-
-All files (`index.html`, `project.html`, `data.js`, `app.js`, `styles.css` and
-`assets/`) must sit at the level Pages serves from — with the `/ (root)` option
-that means the top level of the repository, not nested in another folder. A
-blank page almost always means the files are not at that level.
-
-A custom domain can be added later under **Settings → Pages → Custom domain**.
-
----
-
-## Tips
-
-- Preview locally by double-clicking `index.html`; it opens in a browser.
-- Every commit is a restore point — the repository is the backup.
-- Keep `assets/` filenames lowercase and consistent to avoid broken links.
+Notes:
+- All project posters share one **16:9** ratio, so a single crop works for a
+  project's home card and its projects-page block.
+- The hero fills the whole screen; center the important part of the image since
+  the edges may crop on different screen shapes.
+- Videos follow the same ratios as the posters they replace (16:9).

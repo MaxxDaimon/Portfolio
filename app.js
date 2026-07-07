@@ -132,7 +132,7 @@ function projectBlockHTML(p, num) {
     : '';
 
   const button = p.link
-    ? `<a class="btn btn-primary proj-btn" href="${p.link}" target="_blank" rel="noopener">VISIT PROJECT ↗</a>`
+    ? `<a class="proj-media-btn" href="${p.link}" target="_blank" rel="noopener">VISIT PROJECT ↗</a>`
     : '';
 
   const numStr = String(num).padStart(2, '0');
@@ -147,15 +147,16 @@ function projectBlockHTML(p, num) {
         </div>
       </header>
 
-      <div class="proj-media">${media(p)}</div>
+      <div class="proj-media">${media(p)}${button}</div>
 
-      <div class="proj-summary">${p.description || p.summary || ''}</div>
-
-      <aside class="proj-facts">${facts}</aside>
+      <aside class="proj-facts">
+        ${(p.description || p.summary) ? `<p class="fact-desc">${p.description || p.summary}</p>` : ''}
+        ${facts}
+      </aside>
 
       <div class="proj-resp">${resp}</div>
 
-      <div class="proj-rest">${awards}${button}</div>
+      <div class="proj-rest">${awards}</div>
     </article>`;
 }
 
@@ -353,12 +354,65 @@ function closePanel() { if ($('#themePanel')) $('#themePanel').hidden = true; }
 
 /* ---------- Boot ---------- */
 
+/* ---------- Portrait carousel ---------- */
+// Swaps the About portrait between a set of photos via arrows / dots.
+// Add or remove file paths here to change the set.
+const PORTRAITS = ['assets/portrait-2.jpg', 'assets/portrait-1.jpg'];
+
+function initPortraitCarousel() {
+  const box = document.querySelector('[data-portrait]');
+  if (!box || PORTRAITS.length < 2) return;
+
+  const img = box.querySelector('.portrait');
+  const dots = box.querySelector('.portrait-dots');
+  let i = 0;
+
+  PORTRAITS.forEach((src) => { const im = new Image(); im.src = src; }); // preload
+
+  if (dots) {
+    dots.innerHTML = PORTRAITS.map((_, n) =>
+      `<button type="button" aria-label="Photo ${n + 1}"${n === 0 ? ' class="on"' : ''}></button>`).join('');
+  }
+
+  function show(n) {
+    i = (n + PORTRAITS.length) % PORTRAITS.length;
+    img.style.opacity = '0';
+    setTimeout(() => { img.src = PORTRAITS[i]; img.style.opacity = '1'; }, 180);
+    if (dots) [...dots.children].forEach((d, n2) => d.classList.toggle('on', n2 === i));
+  }
+
+  box.querySelector('.portrait-next').addEventListener('click', () => { show(i + 1); resetAuto(); });
+  box.querySelector('.portrait-prev').addEventListener('click', () => { show(i - 1); resetAuto(); });
+  if (dots) [...dots.children].forEach((d, n) => d.addEventListener('click', () => { show(n); resetAuto(); }));
+
+  // Slow auto-advance; pauses on hover, resumes on leave.
+  let timer = setInterval(() => show(i + 1), 8000);
+  function resetAuto() { clearInterval(timer); timer = setInterval(() => show(i + 1), 8000); }
+  box.addEventListener('mouseenter', () => clearInterval(timer));
+  box.addEventListener('mouseleave', resetAuto);
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   renderProjects();
   renderAllProjects();
   renderHero();
   renderTicker();
+  initPortraitCarousel();
+
+  // Mobile nav toggle
+  const navToggle = $('#navToggle');
+  const nav = $('#mainNav');
+  if (navToggle && nav) {
+    const setOpen = (open) => {
+      nav.classList.toggle('open', open);
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    navToggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+    // Close after tapping a link (but not the THEME button)
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  }
 
   const btn = $('#themeBtn');
   if (btn) {

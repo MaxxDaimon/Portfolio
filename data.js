@@ -126,9 +126,9 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'Play as a pacifist windsurfing cowboy and save corrupted creatures using your trusty lasso.',
     tags:        { team: 'team', engine: 'unreal', focus: ['threeCs', 'combat'] },
-    poster:      'assets/zima-poster.png',
+    poster:      'assets/zima-poster.jpg',
     video:       'assets/zima.mp4',
-    link:        '',
+    link:        'https://buas.itch.io/zima',
 
     year:         '2025',
     summary:      'A short intro paragraph about ZIMA — the pitch and what made it interesting to build. Replace with the real story.',
@@ -140,9 +140,9 @@ const PROJECTS = [
     platforms:    ['Itch.io', 'Windows'],
     awards:       ['BUAS (In-house) — Won Year 2 Best Art 2026'],
     responsibilities: [
-      'Owned a core gameplay system from concept to shipping.',
-      'Built designer-facing tools for fast iteration.',
-      'Tuned the 3Cs (character, camera, controls) for game feel.',
+      'Created initial gameplay prototype and iterated on character movement.',
+      'Created and tweaked camera system and all of its modifiers.',
+      'Created and tweaked control scheme.',
     ],
   },
 
@@ -153,9 +153,9 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'A beautiful, minimal RTS game.',
     tags:        { team: 'team', engine: 'unreal', focus: [] },
-    poster:      'assets/azura-poster.png',
+    poster:      'assets/azura-poster.jpg',
     video:       'assets/azura-video.mp4',
-    link:        '',
+    link:        'https://buas.itch.io/team-gotham',
 
     year:    '',
     summary: 'A short intro paragraph about Azura. Replace with the real story.',
@@ -167,8 +167,9 @@ const PROJECTS = [
     platforms:    ['Itch.io', 'Windows'],
     awards:       [],
     responsibilities: [
-      'Placeholder responsibility — add or remove lines freely.',
-      'Placeholder responsibility — add or remove lines freely.',
+      'Created team contract and planning.',
+      'Set-up team scrum processes on Trello and Miro.',
+      'Balanced player and enemy combat.',
     ],
   },
 
@@ -176,12 +177,12 @@ const PROJECTS = [
     slug:        'adrift',
     title:       'Adrift',
     featured:    false,
-    showOnHome:  true,
+    showOnHome:  false,
     description: 'A short, action packed co-op rafting game.',
     tags:        { team: 'gamejam', engine: 'unreal', focus: [] },
     poster:      'assets/adrift-poster.png',
     video:       'assets/adrift-video.mp4',
-    link:        '',
+    link:        'https://twenmod.itch.io/adrift',
 
     year:    '',
     summary: 'A short intro paragraph about Adrift. Replace with the real story.',
@@ -193,8 +194,8 @@ const PROJECTS = [
     platforms:    ['Itch.io', 'Windows'],
     awards:       [],
     responsibilities: [
-      'Placeholder responsibility — add or remove lines freely.',
-      'Placeholder responsibility — add or remove lines freely.',
+      'Created character and raft movement.',
+      'Helped shape character design and environment mood with artists.',
     ],
   },
 
@@ -202,12 +203,12 @@ const PROJECTS = [
     slug:        'tabletop-tumble',
     title:       'Tabletop Tumble',
     featured:    false,
-    showOnHome:  false,
+    showOnHome:  true,
     description: 'A physics based deck building tower stacker.',
     tags:        { team: 'gamejam', engine: 'unity', focus: [] },
     poster:      'assets/tabletoptumble-poster.png',
     video:       'assets/tabletoptumble-video.mp4',
-    link:        '',
+    link:        'https://twenmod.itch.io/tabletop-tumble',
 
     year:    '',
     summary: 'A short intro paragraph about Tabletop Tumble. Replace with the real story.',
@@ -219,8 +220,9 @@ const PROJECTS = [
     platforms:    ['Itch.io', 'Windows'],
     awards:       ['GMTK Gamejam 2024 — Placed 90th of 7,523 for enjoyment'],
     responsibilities: [
-      'Placeholder responsibility — add or remove lines freely.',
-      'Placeholder responsibility — add or remove lines freely.',
+      'Shaped initial design direction and game vision.',
+      'Designed card abilities.',
+      'Worked with artists to create necessary art assets.',
     ],
   },
 

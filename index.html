@@ -20,11 +20,17 @@
        HEADER  (fixed top bar)
        ============================================================ -->
   <header class="site-header">
-    <a href="#top" class="brand">MAXX WEVER</a>
-    <nav class="nav">
+    <div class="brand-lockup">
+      <a href="#top" class="brand">MAXX WEVER</a>
+      <span class="brand-role">Technical Game Designer</span>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="mainNav">
       <a href="#top">HOME</a>
       <a href="projects.html">PROJECTS</a>
-      <a href="#about">ABOUT</a>
+      <a href="about.html">ABOUT</a>
       <a href="#contact">CONTACT</a>
       <a href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
       <button id="themeBtn" class="theme-btn" aria-label="Site theme">
@@ -50,11 +56,10 @@
     <div class="hero-scrim"></div>
 
     <div class="hero-content">
-      <p class="badge"><span class="badge-dot"></span>AVAILABLE IN 2027 FOR INTERNSHIP ROLES</p>
-      <h1 class="hero-title">Technical<br>Game Designer<span class="accent-dot">.</span></h1>
-      <p class="hero-tagline">I design and build the systems that make games feel good.</p>
+      <h1 class="hero-title">I design and build the systems that make games feel <span class="accent">good</span><span class="accent-dot">.</span></h1>
       <div class="hero-cta">
         <a href="#work" class="btn btn-primary">VIEW WORK ↓</a>
+        <p class="badge"><span class="badge-dot"></span>AVAILABLE IN 2027 FOR INTERNSHIP ROLES</p>
       </div>
     </div>
   </section>
@@ -72,7 +77,7 @@
   <section id="work" class="section">
     <div class="container">
       <div class="section-head">
-        <h2 class="eyebrow">01 — PROJECTS</h2>
+        <h2 class="eyebrow">PROJECTS</h2>
       </div>
 
       <!-- Featured project drops in here -->
@@ -92,53 +97,22 @@
        ============================================================ -->
   <section id="about" class="section about">
     <div class="container">
-      <h2 class="eyebrow">02 — ABOUT</h2>
+      <h2 class="eyebrow">ABOUT</h2>
       <div class="about-grid">
-        <img class="portrait" src="assets/portrait.png" alt="Portrait of Maxx Wever">
+        <div class="portrait-carousel" data-portrait>
+          <img class="portrait" src="assets/portrait-2.jpg" alt="Portrait of Maxx Wever">
+          <button class="portrait-arrow portrait-prev" aria-label="Previous photo" type="button">‹</button>
+          <button class="portrait-arrow portrait-next" aria-label="Next photo" type="button">›</button>
+          <div class="portrait-dots"></div>
+        </div>
         <div class="about-copy">
-          <p>I'm a game design professional specialized in 3Cs, combat and systemic gameplay design.</p>
+          <p>My name is Maxx Wever, I'm a game design professional specialized in 3Cs, combat design and systemic gameplay design.</p>
           <p>Currently in my third year studying at Breda University of Applied Sciences on the Creative Media &amp; Game Technologies course.</p>
-          <p>In my spare time, I enjoy working on small game projects to further develop my skill set as well as play as many games as I can.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================
-       EXPERIENCE  (edit rows directly below — plain HTML)
-       ============================================================ -->
-  <section id="experience" class="section experience">
-    <div class="container">
-      <h2 class="eyebrow">03 — EXPERIENCE</h2>
-      <div class="exp-list">
-
-        <div class="exp-row">
-          <span class="exp-year accent">2024 — NOW</span>
-          <div>
-            <div class="exp-title">Student</div>
-            <div class="exp-sub">Breda University of Applied Sciences (CMGT)</div>
+          <p>I play as many games as I can to find out what makes games fun (or not) and I enjoy working on small game projects to further develop my skillset.</p>
+          <div class="about-cta">
+            <a href="about.html" class="btn btn-ghost">MORE ABOUT ME →</a>
           </div>
-          <span class="exp-tag">EDUCATION</span>
         </div>
-
-        <div class="exp-row">
-          <span class="exp-year">2024</span>
-          <div>
-            <div class="exp-title">Role / Title</div>
-            <div class="exp-sub">Studio or project — placeholder</div>
-          </div>
-          <span class="exp-tag">DESIGN</span>
-        </div>
-
-        <div class="exp-row">
-          <span class="exp-year">2023</span>
-          <div>
-            <div class="exp-title">Role / Title</div>
-            <div class="exp-sub">Studio or project — placeholder</div>
-          </div>
-          <span class="exp-tag">DESIGN</span>
-        </div>
-
       </div>
     </div>
   </section>
@@ -148,7 +122,7 @@
        ============================================================ -->
   <section id="contact" class="section contact">
     <div class="container">
-      <h2 class="eyebrow">04 — CONTACT</h2>
+      <h2 class="eyebrow">CONTACT</h2>
       <h3 class="contact-title">Ask me<br>about<span class="accent"> anything.</span></h3>
       <div class="contact-links">
         <a class="btn btn-primary" href="mailto:MaxxDW@outlook.com">MaxxDW@outlook.com</a>

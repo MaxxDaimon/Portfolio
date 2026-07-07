@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — Maxx Wever</title>
+  <meta name="description" content="About Maxx Wever — technical game designer. Skills, tools, and background.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header (same bar as the other pages) -->
+  <header class="site-header">
+    <a href="index.html" class="brand-lockup">
+      <span class="brand">MAXX WEVER</span>
+      <span class="brand-role">Technical Game Designer</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="mainNav">
+      <a href="index.html#top">HOME</a>
+      <a href="projects.html">PROJECTS</a>
+      <a href="about.html">ABOUT</a>
+      <a href="index.html#contact">CONTACT</a>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
+      <button id="themeBtn" class="theme-btn" aria-label="Site theme">
+        <span class="theme-dot"></span>THEME
+      </button>
+    </nav>
+  </header>
+
+  <div id="themePanel" class="theme-panel" hidden></div>
+
+  <!-- Page heading -->
+  <section class="page-head">
+    <div class="container">
+      <h1 class="page-title">About</h1>
+      <span class="count">MAXX WEVER · BREDA, NL</span>
+    </div>
+    <div class="container"><hr class="page-divider"></div>
+  </section>
+
+  <!-- Intro -->
+  <section class="section about-page">
+    <div class="container">
+      <div class="about-grid">
+        <div class="portrait-carousel" data-portrait>
+          <img class="portrait" src="assets/portrait-2.jpg" alt="Portrait of Maxx Wever">
+          <button class="portrait-arrow portrait-prev" aria-label="Previous photo" type="button">‹</button>
+          <button class="portrait-arrow portrait-next" aria-label="Next photo" type="button">›</button>
+          <div class="portrait-dots"></div>
+        </div>
+        <div class="about-copy">
+          <p>My name is Maxx Wever, I'm a game design professional specialized in 3Cs, combat design and systemic gameplay design.</p>
+          <p>Currently in my third year studying at Breda University of Applied Sciences on the Creative Media &amp; Game Technologies course.</p>
+          <p>I play as many games as I can to find out what makes games fun (or not) and I enjoy working on small game projects to further develop my skillset.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section skills">
+    <div class="container">
+      <h2 class="eyebrow">SKILLS &amp; TOOLS</h2>
+      <div class="skills-grid">
+
+        <div class="skill-col">
+          <h3 class="skill-head">Software</h3>
+          <dl class="skill-groups">
+            <div class="skill-group">
+              <dt>Engines</dt>
+              <dd>Unreal Engine</dd>
+            </div>
+            <div class="skill-group">
+              <dt>Planning</dt>
+              <dd>Miro, Jira, Trello, Taiga</dd>
+            </div>
+            <div class="skill-group">
+              <dt>Other</dt>
+              <dd>Office Suite, Perforce, GitHub, DaVinci Resolve</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="skill-col">
+          <h3 class="skill-head">Design</h3>
+          <ul class="skill-list">
+            <li>Iterative design &amp; rapid prototyping</li>
+            <li>Data-informed design (research &amp; playtesting)</li>
+            <li>Player mechanics</li>
+            <li>Character controllers</li>
+            <li>Control schemes</li>
+            <li>Camera systems</li>
+            <li>Upgrade systems</li>
+          </ul>
+        </div>
+
+        <div class="skill-col">
+          <h3 class="skill-head">Professional</h3>
+          <ul class="skill-list">
+            <li>Feature ownership</li>
+            <li>Agile scrum</li>
+            <li>Sketching</li>
+            <li>Visual scripting</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="about-cta">
+        <a href="projects.html" class="btn btn-primary">VIEW PROJECTS →</a>
+        <a href="index.html#contact" class="btn btn-ghost">GET IN TOUCH</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience" class="section experience">
+    <div class="container">
+      <h2 class="eyebrow">EXPERIENCE</h2>
+      <div class="exp-list">
+
+        <div class="exp-row">
+          <span class="exp-year accent">2024 — NOW</span>
+          <div>
+            <div class="exp-title">Student</div>
+            <div class="exp-sub">Breda University of Applied Sciences (CMGT)</div>
+          </div>
+          <span class="exp-tag">EDUCATION</span>
+        </div>
+
+        <div class="exp-row">
+          <span class="exp-year">2024</span>
+          <div>
+            <div class="exp-title">Role / Title</div>
+            <div class="exp-sub">Studio or project — placeholder</div>
+          </div>
+          <span class="exp-tag">DESIGN</span>
+        </div>
+
+        <div class="exp-row">
+          <span class="exp-year">2023</span>
+          <div>
+            <div class="exp-title">Role / Title</div>
+            <div class="exp-sub">Studio or project — placeholder</div>
+          </div>
+          <span class="exp-tag">DESIGN</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© 2026 MAXX WEVER</span><span>BREDA, NL</span>
+  </footer>
+
+  <!-- Content (edit this) + engine (leave alone) -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
