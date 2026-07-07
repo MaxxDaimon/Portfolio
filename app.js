@@ -352,8 +352,6 @@ function openPanel()  { renderThemePanel(); $('#themePanel').hidden = false; }
 function closePanel() { if ($('#themePanel')) $('#themePanel').hidden = true; }
 
 
-/* ---------- Boot ---------- */
-
 /* ---------- Portrait carousel ---------- */
 // Swaps the About portrait between a set of photos via arrows / dots.
 // Add or remove file paths here to change the set.
@@ -393,13 +391,86 @@ function initPortraitCarousel() {
 }
 
 
+/* ---------- Articles page (articles.html) ---------- */
+
+function renderArticles() {
+  const root = $('#articleList');
+  if (!root) return; // not on the articles page
+
+  const list = (typeof ARTICLES !== 'undefined' ? ARTICLES : []).slice()
+    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+
+  if (!list.length) {
+    root.innerHTML = `
+      <div class="articles-empty">
+        <div class="constr-icon">✎</div>
+        <h2>This page is currently under construction.</h2>
+        <p>Write-ups and articles on design, prototyping and process are on the way. Check back soon.</p>
+        <a class="btn btn-ghost" href="projects.html">VIEW PROJECTS →</a>
+      </div>`;
+    return;
+  }
+
+  const fmtDate = (d) => {
+    if (!d) return '';
+    const [y, m] = String(d).split('-');
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return m ? `${months[+m]} ${y}` : y;
+  };
+
+  root.innerHTML = `<div class="article-grid">${list.map((a) => {
+    const inner = `
+      <div class="article-meta">
+        <span class="article-date">${fmtDate(a.date)}</span>
+        ${a.tag ? `<span class="article-tag">${a.tag}</span>` : ''}
+      </div>
+      <h2 class="article-title">${a.title || 'Untitled'}</h2>
+      ${a.summary ? `<p class="article-summary">${a.summary}</p>` : ''}
+      ${a.link ? '<span class="article-more">READ →</span>' : ''}`;
+    return a.link
+      ? `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">${inner}</a>`
+      : `<article class="article-card">${inner}</article>`;
+  }).join('')}</div>`;
+}
+
+
+/* ---------- Scroll reveal ---------- */
+// Gently fades/rises elements as they scroll into view.
+// Skipped entirely for visitors who prefer reduced motion.
+function initReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+
+  const sel = '.featured, .card, .proj, .article-card, .articles-empty,'
+    + ' .about-grid, .exp-row, .skill-col, .section-head, .hero-cta, .contact-title, .contact-links';
+  const targets = document.querySelectorAll(sel);
+  if (!targets.length) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+  targets.forEach((el, n) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = Math.min(n % 4, 3) * 60 + 'ms'; // slight stagger within a group
+    io.observe(el);
+  });
+}
+
+
+/* ---------- Boot ---------- */
+
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   renderProjects();
   renderAllProjects();
+  renderArticles();
   renderHero();
   renderTicker();
   initPortraitCarousel();
+  initReveal();
 
   // Mobile nav toggle
   const navToggle = $('#navToggle');

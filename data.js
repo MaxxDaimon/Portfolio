@@ -262,6 +262,28 @@ const HERO = {
 
 
 /* ============================================================
+   3b) ARTICLES  (the Articles page)
+   ------------------------------------------------------------
+   Blog posts / write-ups. Leave the list EMPTY ([]) to show a
+   friendly "under construction" placeholder on articles.html.
+   Add a post by adding a block:
+
+     {
+       title:   'What I learned tuning ZIMA's camera',
+       date:    '2026-07',                 // 'YYYY' or 'YYYY-MM'
+       summary: 'One or two sentences shown on the card.',
+       link:    'https://…',               // '' = no link yet
+       tag:     'Design',                  // optional small label
+     }
+
+   Newest first is handled automatically (by date).
+   ============================================================ */
+const ARTICLES = [
+  // No articles yet — the page shows an "under construction" note.
+];
+
+
+/* ============================================================
    4) SKILLS TICKER
    ------------------------------------------------------------
    The words that scroll across the strip under the hero.
