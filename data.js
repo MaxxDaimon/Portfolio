@@ -73,34 +73,49 @@ const TAG_TYPES = {
    (Set one project to featured for the classic look; more than
     one is allowed and each becomes its own banner.)
 
-   Clicking a card opens its own detail page automatically at
-   project.html — no separate file to create. The extra detail
-   fields (summary, contributions, body, gallery) fill that page
-   and are all OPTIONAL; leave any of them out and that part of
-   the page is simply skipped.
+   showOnHome: true  → the project appears in the home page's
+                       Projects section.
+   showOnHome: false → hidden from the home page but still shown
+                       on the all-projects page (projects.html).
+   This is the control for what the home page displays: for the
+   classic "1 featured + 2 smaller" look, mark the featured
+   project and two others as showOnHome: true, and the rest false.
+   The all-projects page always lists every project.
+
+   Clicking a card on the home page scrolls to that project's
+   expanded block on the projects page (projects.html). All the
+   fields below fill that block; the optional ones are simply
+   skipped when left empty.
 
    Fields
    ------
-   slug         short id used in the page address (letters/dashes,
-                must be unique). The card links to project.html?id=<slug>.
+   slug         unique short id (letters/dashes). Home cards link
+                to projects.html#<slug>.
    title        project name
    featured     true or false (see above)
-   description  one or two sentences, shown on the card
+   showOnHome   true or false (see above)
+   description  one or two sentences, shown on the home card
    tags         an object keyed by TAG TYPE. Single-choice types
                 take one key; multiple-choice types take a list:
                     tags: { team:'team', engine:'unreal', focus:['systems','combat'] }
    poster       image shown for the project (file goes in assets/)
    video        OPTIONAL .mp4 that plays over the poster; '' = image only
-   link         OPTIONAL external URL to open instead of the detail
-                page (e.g. an itch.io page). '' = use the detail page.
+   link         OPTIONAL external URL (e.g. an itch.io page) shown
+                as a button on the project block. '' = no button.
 
-   Detail-page fields (all optional)
-   ---------------------------------
-   year          e.g. '2025'
-   summary       one intro paragraph at the top of the detail page
-   contributions a list of bullet points ("what I did")
-   body          a list of paragraphs of longer write-up
-   gallery       a list of image paths shown in a grid
+   Expanded-block fields (all optional)
+   ------------------------------------
+   summary          one intro paragraph
+   role             your role, e.g. 'Technical Game Designer'
+   added            OPTIONAL date this was made, 'YYYY' or 'YYYY-MM'.
+                    Controls ordering on the projects page (newest
+                    first). If omitted, the year in `timeframe` is used.
+   timeframe        e.g. '3 months · 2025'
+   teamSize         e.g. 'Solo' or '6 developers'
+   genre            e.g. 'Action-Adventure'
+   platforms        a list, e.g. ['PC'] or ['PC','Switch']
+   awards           a list of accolades, e.g. ['Best Game — X Jam']
+   responsibilities a list of bullet points ("what I did")
    ============================================================ */
 const PROJECTS = [
 
@@ -108,6 +123,7 @@ const PROJECTS = [
     slug:        'zima',
     title:       'ZIMA',
     featured:    true,
+    showOnHome:  true,
     description: 'Play as a pacifist windsurfing cowboy and save corrupted creatures using your trusty lasso.',
     tags:        { team: 'team', engine: 'unreal', focus: ['threeCs', 'combat'] },
     poster:      'assets/zima-poster.png',
@@ -115,22 +131,26 @@ const PROJECTS = [
     link:        '',
 
     year:         '2025',
-    summary:      'A short intro paragraph about ZIMA — the pitch, the team, and the role held on the project. Replace with the real story.',
-    contributions: [
+    summary:      'A short intro paragraph about ZIMA — the pitch and what made it interesting to build. Replace with the real story.',
+    role:         '3Cs Designer',
+    added:        '2026-06',
+    timeframe:    '8 weeks · 2026',
+    teamSize:     '16 developers',
+    genre:        'Action-Adventure',
+    platforms:    ['Itch.io', 'Windows'],
+    awards:       ['BUAS (In-house) — Won Year 2 Best Art 2026'],
+    responsibilities: [
       'Owned a core gameplay system from concept to shipping.',
       'Built designer-facing tools for fast iteration.',
       'Tuned the 3Cs (character, camera, controls) for game feel.',
     ],
-    body: [
-      'A longer paragraph describing the design problem, the approach taken, and what was learned. Replace this placeholder with real detail.',
-    ],
-    gallery: [],
   },
 
   {
     slug:        'azura',
     title:       'Azura',
     featured:    false,
+    showOnHome:  true,
     description: 'A beautiful, minimal RTS game.',
     tags:        { team: 'team', engine: 'unreal', focus: [] },
     poster:      'assets/azura-poster.png',
@@ -139,15 +159,24 @@ const PROJECTS = [
 
     year:    '',
     summary: 'A short intro paragraph about Azura. Replace with the real story.',
-    contributions: [],
-    body:    [],
-    gallery: [],
+    role:         'Producer',
+    added:        '2025-06',
+    timeframe:    '8 weeks · 2025',
+    teamSize:     '13 developers',
+    genre:        'Real-Time Strategy',
+    platforms:    ['Itch.io', 'Windows'],
+    awards:       [],
+    responsibilities: [
+      'Placeholder responsibility — add or remove lines freely.',
+      'Placeholder responsibility — add or remove lines freely.',
+    ],
   },
 
   {
     slug:        'adrift',
     title:       'Adrift',
     featured:    false,
+    showOnHome:  true,
     description: 'A short, action packed co-op rafting game.',
     tags:        { team: 'gamejam', engine: 'unreal', focus: [] },
     poster:      'assets/adrift-poster.png',
@@ -156,15 +185,24 @@ const PROJECTS = [
 
     year:    '',
     summary: 'A short intro paragraph about Adrift. Replace with the real story.',
-    contributions: [],
-    body:    [],
-    gallery: [],
+    role:         'Generalist',
+    added:        '2024-06',
+    timeframe:    '80 hours · CMGT Game Jam 2024',
+    teamSize:     '10 developers',
+    genre:        'Co-op Action',
+    platforms:    ['Itch.io', 'Windows'],
+    awards:       [],
+    responsibilities: [
+      'Placeholder responsibility — add or remove lines freely.',
+      'Placeholder responsibility — add or remove lines freely.',
+    ],
   },
 
   {
     slug:        'tabletop-tumble',
     title:       'Tabletop Tumble',
     featured:    false,
+    showOnHome:  false,
     description: 'A physics based deck building tower stacker.',
     tags:        { team: 'gamejam', engine: 'unity', focus: [] },
     poster:      'assets/tabletoptumble-poster.png',
@@ -173,9 +211,17 @@ const PROJECTS = [
 
     year:    '',
     summary: 'A short intro paragraph about Tabletop Tumble. Replace with the real story.',
-    contributions: [],
-    body:    [],
-    gallery: [],
+    role:         'Game Designer',
+    added:        '2024-01',
+    timeframe:    '96 hours · GMTK Game Jam 2024',
+    teamSize:     '8 developers',
+    genre:        'Physics Deckbuilder Roguelike',
+    platforms:    ['Itch.io', 'Windows'],
+    awards:       ['GMTK Gamejam 2024 — Placed 90th of 7,523 for enjoyment'],
+    responsibilities: [
+      'Placeholder responsibility — add or remove lines freely.',
+      'Placeholder responsibility — add or remove lines freely.',
+    ],
   },
 
 ];
@@ -184,17 +230,32 @@ const PROJECTS = [
 /* ============================================================
    3) HERO BACKGROUND
    ------------------------------------------------------------
-   The large background behind the hero can cycle through the
-   project media (each project's poster now, or its video once
-   added). This reuses the poster/video already set on each
-   project above — nothing extra to fill in.
-     rotate           true  = cycle through the projects
-                      false = just show the first project's media
-     intervalSeconds  how long each one stays before switching
+   The large background behind the hero reuses each project's
+   poster/video — nothing extra to fill in. Four settings:
+
+     mode     'static' = show one item and hold on it
+              'rotate' = cycle through the chosen projects
+     media    'poster' = always show the still image
+              'video'  = play the .mp4 (shows the poster until a
+                         video file is added for that project)
+     intervalSeconds  how long each item stays (rotate mode only)
+     projects a list of project slugs to use, in order. This is
+              the control for WHICH projects appear in the hero.
+              Leave as [] to use every project.
+              In 'static' mode the first slug in the list is shown.
+
+   Examples
+     Static poster of ZIMA:
+       mode:'static', media:'poster', projects:['zima']
+     Rotating videos of two projects every 8s:
+       mode:'rotate', media:'video', intervalSeconds:8,
+       projects:['zima','azura']
    ============================================================ */
 const HERO = {
-  rotate: true,
+  mode:            'rotate',        // 'static' | 'rotate'
+  media:           'poster',        // 'poster' | 'video'
   intervalSeconds: 6,
+  projects:        ['zima', 'azura'],
 };
 
 

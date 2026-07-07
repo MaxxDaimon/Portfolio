@@ -10,7 +10,7 @@ directly on GitHub.
 
 ```
 index.html     The home page (hero, about, experience, contact)
-project.html   The template for every project's detail page (one file, reused)
+projects.html  The projects page — every project as a full expanded block
 data.js        ALL content that changes: tags, projects, ticker words, theme
 app.js         The engine that renders data.js. Normally left alone
 styles.css     All styling. Default colours live at the top under :root
@@ -23,10 +23,12 @@ Almost all editing happens in **`data.js`**. A small file count is normal here.
 
 ## How the pages fit together
 
-- `index.html` shows the home page and the project cards.
-- Clicking a card opens `project.html?id=<slug>` — the **same** `project.html`
-  file, which looks up the matching project in `data.js` and fills itself in.
-  Adding a project never means creating a new page.
+- `index.html` is the home page. Its Projects section shows a few chosen
+  projects as cards.
+- `projects.html` lists **every** project as a full expanded block (media,
+  summary, responsibilities, and a facts panel).
+- Clicking a card on the home page scrolls to that project's block on
+  `projects.html`. Adding a project never means creating a new page.
 - Both pages load `data.js` (the content) and `app.js` (the engine).
 
 ---
@@ -58,15 +60,27 @@ type out to show none of it.
 
 ---
 
-## Featured vs. regular projects
+## Featured vs. regular, and what shows on the home page
 
-Each project has a `featured` field:
+Each project has two independent switches:
 
-- `featured: true`  → shown large as the wide 16:9 banner at the top.
-- `featured: false` → shown as a card in the grid below.
+**`featured`** — the card's size/style:
+- `featured: true`  → shown large as the wide 16:9 banner.
+- `featured: false` → shown as a card in the grid.
 
-Set one project to featured for the standard layout. The grid shows a running
-count of all projects; individual cards are **not** numbered.
+**`showOnHome`** — whether it appears on the home page at all:
+- `showOnHome: true`  → included in the home page's Projects section.
+- `showOnHome: false` → hidden from the home page.
+
+The **all-projects page** (`projects.html`, reached by the "VIEW ALL PROJECTS"
+button and the PROJECTS nav link) always lists **every** project regardless of
+these switches.
+
+So for the classic "1 featured + 2 smaller" home layout: give one project
+`featured: true, showOnHome: true`, give two others `featured: false,
+showOnHome: true`, and set every remaining project to `showOnHome: false`. Change
+those switches at any time to swap what the home page shows — full control, no
+other edits needed. The count shown is the total number of projects.
 
 ---
 
@@ -79,34 +93,38 @@ values:
 
 ```js
 {
-  slug:        'game-name',            // unique id used in the page address
+  slug:        'game-name',            // unique id; home cards link to projects.html#game-name
   title:       'Game Name',
   featured:    false,                  // true = big banner, false = grid card
-  description: 'One or two sentences shown on the card.',
+  showOnHome:  true,                   // true = show on the home page
+  description: 'One or two sentences shown on the home card.',
   tags:        { team: 'solo', engine: 'unity', focus: ['systems'] },
   poster:      'assets/game-name.png', // image (place the file in assets/)
   video:       '',                     // '' = image only; add an .mp4 path later
-  link:        '',                     // '' = use the built-in detail page
+  link:        '',                     // '' = no button; a URL adds a VISIT button
 
-  // Detail-page content (all optional — leave empty to skip that part)
-  year:         '2025',
-  summary:      'One intro paragraph for the detail page.',
-  contributions: ['What was done…', 'And more…'],
-  body:         ['A longer paragraph.', 'Another paragraph.'],
-  gallery:      ['assets/game-1.png', 'assets/game-2.png'],
+  // Expanded-block content (all optional — leave empty to skip that part)
+  summary:          'One intro paragraph.',
+  role:             'Technical Game Designer',
+  timeframe:        '3 months · 2025',
+  teamSize:         '6 developers',
+  genre:            'Action-Adventure',
+  platforms:        ['PC'],
+  awards:           ['Best Game — Some Jam'],
+  responsibilities: ['What was done…', 'And more…'],
 },
 ```
 
-Remove a project by deleting its block. Reorder cards by moving blocks up or down.
+Remove a project by deleting its block. Reorder by moving blocks up or down.
 
-Each `slug` must be unique — it is what the detail page uses to find the project.
-Set `link` to an external URL (e.g. an itch.io page) to send the card there
-instead of opening the detail page.
+Each `slug` must be unique — it is the anchor the home cards link to. Set `link`
+to an external URL (e.g. an itch.io page) to add a VISIT button on that
+project's block.
 
 ### Add an image
 
 1. Place the file in the `assets/` folder.
-2. Point a project's `poster` (or a `gallery` entry) at it, e.g.
+2. Point a project's `poster` at it, e.g.
    `poster: 'assets/game-name.png'`.
 
 Keep images small (around 1600px wide, ideally under ~500 KB) for fast loading.
@@ -132,12 +150,22 @@ another entry, edit the text between the tags, or delete a block to remove it.
 
 In `data.js`, edit the `TICKER_WORDS` list. Add, remove, or reorder freely.
 
-### Hero background rotation
+### Hero background
 
-The large background behind the hero cycles through the projects' media (each
-project's poster now, its video once added). Edit `HERO` in `data.js`: set
-`rotate: false` to show only the first project's media, or change
-`intervalSeconds` to control how long each one stays before switching.
+The large background behind the hero is controlled by the `HERO` block in
+`data.js`, with four settings:
+
+- `mode` — `'static'` holds on one item; `'rotate'` cycles through them.
+- `media` — `'poster'` always shows the still image; `'video'` plays the
+  project's `.mp4` (falling back to the poster until a video is added).
+- `intervalSeconds` — how long each item stays, in rotate mode.
+- `projects` — a list of project slugs deciding **which** projects appear in the
+  hero, in order. Leave as `[]` to use all of them. In static mode the first
+  slug is the one shown.
+
+Example: `mode:'static', media:'poster', projects:['zima']` shows just ZIMA's
+still image; `mode:'rotate', media:'video', projects:['zima','azura']` cycles
+those two as video.
 
 ### Change default colours
 

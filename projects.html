@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project — Maxx Wever</title>
-  <meta name="description" content="Project detail — portfolio of Maxx Wever.">
+  <title>Projects — Maxx Wever</title>
+  <meta name="description" content="All projects — portfolio of Maxx Wever, technical game designer.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,8 +20,9 @@
     <a href="index.html" class="brand">MAXX WEVER</a>
     <nav class="nav">
       <a href="index.html#top">HOME</a>
-      <a href="index.html#work">PROJECTS</a>
+      <a href="projects.html">PROJECTS</a>
       <a href="index.html#about">ABOUT</a>
+      <a href="index.html#contact">CONTACT</a>
       <a href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
       <button id="themeBtn" class="theme-btn" aria-label="Site theme">
         <span class="theme-dot"></span>THEME
@@ -31,8 +32,23 @@
 
   <div id="themePanel" class="theme-panel" hidden></div>
 
-  <!-- The whole project detail is built by app.js from data.js -->
-  <main id="projectDetail"></main>
+  <!-- Page heading -->
+  <section class="page-head">
+    <div class="container">
+      <div>
+        <h2 class="eyebrow">ALL WORK</h2>
+        <h1 class="page-title">Projects</h1>
+      </div>
+      <span class="count" id="allProjectsCount"></span>
+    </div>
+  </section>
+
+  <!-- All projects (built by app.js from data.js) -->
+  <section class="section">
+    <div class="container">
+      <div id="allProjects"></div>
+    </div>
+  </section>
 
   <footer class="footer">
     <span>© 2026 MAXX WEVER</span><span>BREDA, NL</span>

@@ -43,90 +43,226 @@ function media(project) {
   return `<video autoplay muted loop playsinline poster="${project.poster}">${source}</video>`;
 }
 
-// Where a project card points: an external link if given, else its detail page.
+// Where a project's external link points (used for the block button).
 function projectLink(p) {
-  if (p.link) return p.link;
-  return p.slug ? `project.html?id=${encodeURIComponent(p.slug)}` : '#';
+  return p.link || '';
+}
+
+// Home cards scroll to the project's block on the projects page.
+function homeCardLink(p) {
+  return p.slug ? `projects.html#${encodeURIComponent(p.slug)}` : 'projects.html';
 }
 
 
-/* ---------- Home page: project cards ---------- */
+/* ---------- Card builders (shared by home + all-projects page) ---------- */
 
-function renderProjects() {
-  if (!$('#projectGrid')) return; // not on the home page
+function featuredCardHTML(p) {
+  return `
+    <a class="featured" href="${homeCardLink(p)}">
+      ${media(p)}
+      <div class="card-scrim"></div>
+      <div class="caption">
+        <div class="kicker">FEATURED</div>
+        <h3>${p.title}</h3>
+        <p>${p.description}</p>
+      </div>
+    </a>`;
+}
 
-  const featured = PROJECTS.filter((p) => p.featured);
-  const regular  = PROJECTS.filter((p) => !p.featured);
-
-  $('#projectCount').textContent =
-    String(PROJECTS.length).padStart(3, '0') + ' PROJECTS';
-
-  // Featured banners
-  $('#featuredSlot').innerHTML = featured.map((p) => {
-    const team = typeLabel(p.tags, 'team');
-    const kicker = 'FEATURED' + (team ? ' · ' + team.toUpperCase() : '');
-    return `
-      <a class="featured" href="${projectLink(p)}">
-        ${media(p)}
-        <div class="card-scrim"></div>
-        <div class="caption">
-          <div>
-            <div class="kicker">${kicker}</div>
-            <h3>${p.title}</h3>
-            <p>${p.description}</p>
-          </div>
-          <div class="tags">${tagChips(p.tags, 'tag')}</div>
-        </div>
-      </a>`;
-  }).join('');
-
-  // Grid cards — 16:9 media, compact body with tags beside the text
-  $('#projectGrid').innerHTML = regular.map((p) => `
-    <a class="card" href="${projectLink(p)}">
+function gridCardHTML(p) {
+  return `
+    <a class="card" href="${homeCardLink(p)}">
       <div class="card-media">
         ${media(p)}
       </div>
       <div class="card-body">
-        <div class="card-text">
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-        </div>
-        <div class="card-tags">${tagChips(p.tags, 'tag')}</div>
+        <h3>${p.title}</h3>
+        <p>${p.description}</p>
       </div>
-    </a>`).join('');
+    </a>`;
 }
 
 
-/* ---------- Hero background rotator ---------- */
+/* ---------- Home page: project cards ---------- */
+// Shows only projects marked showOnHome. The "VIEW ALL" button links
+// to projects.html, which lists everything.
 
-function renderHeroRotator() {
+function renderProjects() {
+  if (!$('#projectGrid')) return; // not on the home page
+
+  const shown    = PROJECTS.filter((p) => p.showOnHome);
+  const featured = shown.filter((p) => p.featured);
+  const regular  = shown.filter((p) => !p.featured);
+
+  const countEl = $('#projectCount');
+  if (countEl) countEl.textContent = String(PROJECTS.length).padStart(3, '0') + ' PROJECTS';
+
+  $('#featuredSlot').innerHTML = featured.map(featuredCardHTML).join('');
+  $('#projectGrid').innerHTML  = regular.map(gridCardHTML).join('');
+}
+
+
+/* ---------- All-projects page (projects.html) ---------- */
+// Every project renders as a full expanded block with all its info.
+
+function factRow(label, value) {
+  if (!value) return '';
+  return `<div class="fact"><dt>${label}</dt><dd>${value}</dd></div>`;
+}
+
+function projectBlockHTML(p, num) {
+  const facts = [
+    factRow('Role', p.role),
+    factRow('Timeframe', p.timeframe),
+    factRow('Team Size', p.teamSize),
+    factRow('Genre', p.genre),
+    factRow('Platforms', (p.platforms && p.platforms.length) ? p.platforms.join(', ') : ''),
+    factRow('Engine', typeLabel(p.tags, 'engine')),
+  ].join('');
+
+  const medal = '<svg class="medal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="6"></circle><path d="M9 9.5 6.5 3M15 9.5 17.5 3M9.5 4h5"></path></svg>';
+
+  const awards = (p.awards && p.awards.length)
+    ? `<div class="proj-awards">${p.awards.map((a) => `<div class="award">${medal}<span>${a}</span></div>`).join('')}</div>`
+    : '';
+
+  const resp = (p.responsibilities && p.responsibilities.length)
+    ? `<h3 class="eyebrow proj-sub">RESPONSIBILITY HIGHLIGHTS</h3>
+       <ul class="proj-list">${p.responsibilities.map((r) => `<li>${r}</li>`).join('')}</ul>`
+    : '';
+
+  const button = p.link
+    ? `<a class="btn btn-primary proj-btn" href="${p.link}" target="_blank" rel="noopener">VISIT PROJECT ↗</a>`
+    : '';
+
+  const numStr = String(num).padStart(2, '0');
+
+  return `
+    <article class="proj" id="${p.slug}">
+      <header class="proj-head">
+        <div class="proj-titlerow">
+          <h2 class="proj-title">${p.title}</h2>
+          ${p.featured ? '<span class="proj-flag">FEATURED</span>' : ''}
+          <span class="proj-num">${numStr}</span>
+        </div>
+      </header>
+
+      <div class="proj-media">${media(p)}</div>
+
+      <div class="proj-summary">${p.description || p.summary || ''}</div>
+
+      <aside class="proj-facts">${facts}</aside>
+
+      <div class="proj-resp">${resp}</div>
+
+      <div class="proj-rest">${awards}${button}</div>
+    </article>`;
+}
+
+/* Order for the projects page: featured first, then newest first.
+   "Newest" uses the optional `added` field (e.g. '2026-03' or '2026'),
+   falling back to a year parsed from `timeframe`. Ties keep data.js order. */
+function addedKey(p) {
+  if (p.added) return String(p.added);
+  const m = String(p.timeframe || '').match(/\b(19|20)\d{2}\b/);
+  return m ? m[0] : '0';
+}
+
+function sortedProjects(list) {
+  return list
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => {
+      const fa = a.p.featured ? 0 : 1, fb = b.p.featured ? 0 : 1;
+      if (fa !== fb) return fa - fb;                 // featured first
+      const ka = addedKey(a.p), kb = addedKey(b.p);
+      if (ka !== kb) return kb.localeCompare(ka);    // newest first
+      return a.i - b.i;                              // stable: keep data.js order
+    })
+    .map((x) => x.p);
+}
+
+function renderAllProjects() {
+  const root = $('#allProjects');
+  if (!root) return; // not on the all-projects page
+
+  const ordered = sortedProjects(PROJECTS);
+
+  // Chronological numbering: oldest project = 01 (independent of display order).
+  const byAge = [...PROJECTS].sort((a, b) => addedKey(a).localeCompare(addedKey(b)));
+  const numberOf = new Map(byAge.map((p, i) => [p.slug, i + 1]));
+
+  root.innerHTML = ordered.map((p) => projectBlockHTML(p, numberOf.get(p.slug))).join('');
+
+  const count = $('#allProjectsCount');
+  if (count) count.textContent = String(ordered.length).padStart(3, '0') + ' PROJECTS LISTED';
+
+  // If the URL has #slug, scroll that block into view below the fixed header.
+  if (location.hash) {
+    const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (el) {
+      requestAnimationFrame(() => {
+        const y = el.getBoundingClientRect().top + window.pageYOffset - 90;
+        window.scrollTo(0, y);
+      });
+    }
+  }
+}
+
+
+/* ---------- Hero background ---------- */
+// Honors the HERO settings in data.js: static vs rotate, poster vs
+// video, which projects, and the interval.
+
+function resolveHeroProjects() {
+  const slugs = (typeof HERO !== 'undefined' && HERO.projects) || [];
+  if (slugs.length) {
+    return slugs
+      .map((s) => PROJECTS.find((p) => p.slug === s))
+      .filter(Boolean);
+  }
+  return PROJECTS.filter((p) => p.poster);
+}
+
+function heroLayer(item, useVideo, visible) {
+  const v = document.createElement('video');
+  v.className = 'hero-media hero-layer';
+  v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+  if (item.poster) v.setAttribute('poster', item.poster);
+  // Fade between poster images; hard-cut between videos.
+  v.style.transition = useVideo ? 'none' : 'opacity 1.1s ease';
+  v.style.opacity = visible ? '1' : '0';
+  v.style.zIndex = visible ? '1' : '0';
+  if (useVideo && item.video) {
+    const s = document.createElement('source');
+    s.src = item.video; s.type = 'video/mp4';
+    v.appendChild(s);
+  }
+  return v;
+}
+
+function renderHero() {
   const hero = document.querySelector('.hero');
-  if (!hero) return;                                   // not on the home page
-  if (typeof HERO === 'undefined' || !HERO.rotate) return;
+  if (!hero || typeof HERO === 'undefined') return;   // not on the home page
 
-  const items = PROJECTS.filter((p) => p.poster).map((p) => ({ poster: p.poster, video: p.video }));
-  if (items.length < 2) return;                        // nothing to cycle
+  const useVideo = HERO.media === 'video';
+  let items = resolveHeroProjects();
+  if (!items.length) return;
+
+  // Static mode: only the first item, no rotation.
+  if (HERO.mode !== 'rotate') items = items.slice(0, 1);
 
   const oldMedia = hero.querySelector('.hero-media');
   if (oldMedia) oldMedia.remove();
 
   const layers = items.map((it, i) => {
-    const v = document.createElement('video');
-    v.className = 'hero-media hero-layer';
-    v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
-    v.setAttribute('poster', it.poster);
-    v.style.opacity = i === 0 ? '1' : '0';
-    v.style.zIndex = i === 0 ? '1' : '0';
-    if (it.video) {
-      const s = document.createElement('source');
-      s.src = it.video; s.type = 'video/mp4';
-      v.appendChild(s);
-    }
-    hero.insertBefore(v, hero.firstChild);
-    return v;
+    const layer = heroLayer(it, useVideo, i === 0);
+    hero.insertBefore(layer, hero.firstChild);
+    return layer;
   });
 
   try { layers[0].play(); } catch (e) {}
+
+  if (layers.length < 2) return;                       // nothing to rotate
 
   let idx = 0;
   setInterval(() => {
@@ -145,65 +281,6 @@ function renderTicker() {
   if (!$('#tickerTrack')) return;
   const one = TICKER_WORDS.map((w) => `<span>${w}</span><span class="sep">·</span>`).join('');
   $('#tickerTrack').innerHTML = one + one + one + one;
-}
-
-
-/* ---------- Detail page ---------- */
-
-function renderDetail() {
-  const root = $('#projectDetail');
-  if (!root) return; // not on the detail page
-
-  const id = new URLSearchParams(location.search).get('id');
-  const p = PROJECTS.find((x) => x.slug === id);
-
-  if (!p) {
-    root.innerHTML = `
-      <div class="pd-missing">
-        <h1>Project not found</h1>
-        <p><a href="index.html">← Back to all projects</a></p>
-      </div>`;
-    return;
-  }
-
-  document.title = p.title + ' — Maxx Wever';
-
-  const meta = [p.year, typeLabel(p.tags, 'team'), typeLabel(p.tags, 'engine')]
-    .filter(Boolean)
-    .map((m) => `<span>${m}</span>`)
-    .join('<span class="pd-dot">·</span>');
-
-  const contributions = (p.contributions && p.contributions.length)
-    ? `<div class="pd-block">
-         <h2 class="eyebrow">CONTRIBUTIONS</h2>
-         <ul class="pd-list">${p.contributions.map((c) => `<li>${c}</li>`).join('')}</ul>
-       </div>` : '';
-
-  const body = (p.body && p.body.length)
-    ? `<div class="pd-block pd-body">${p.body.map((par) => `<p>${par}</p>`).join('')}</div>` : '';
-
-  const gallery = (p.gallery && p.gallery.length)
-    ? `<div class="pd-gallery">${p.gallery.map((src) => `<img src="${src}" alt="">`).join('')}</div>` : '';
-
-  root.innerHTML = `
-    <section class="pd-hero">
-      ${media(p)}
-      <div class="hero-scrim"></div>
-      <div class="pd-hero-content">
-        <a class="pd-back" href="index.html">← ALL PROJECTS</a>
-        <h1 class="pd-title">${p.title}</h1>
-        <div class="pd-meta">${meta}</div>
-        <div class="tags pd-tags">${tagChips(p.tags, 'tag')}</div>
-      </div>
-    </section>
-
-    <div class="pd-content">
-      ${p.summary ? `<p class="pd-summary">${p.summary}</p>` : ''}
-      ${contributions}
-      ${body}
-      ${gallery}
-      ${p.link ? `<a class="btn btn-primary" href="${p.link}">VISIT PROJECT ↗</a>` : ''}
-    </div>`;
 }
 
 
@@ -279,9 +356,9 @@ function closePanel() { if ($('#themePanel')) $('#themePanel').hidden = true; }
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   renderProjects();
-  renderHeroRotator();
+  renderAllProjects();
+  renderHero();
   renderTicker();
-  renderDetail();
 
   const btn = $('#themeBtn');
   if (btn) {
