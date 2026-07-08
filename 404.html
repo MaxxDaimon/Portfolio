@@ -14,14 +14,16 @@
   <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
 
   <!-- Self-contained styles so the page always renders, even if it's served
-       from an unexpected URL where styles.css can't resolve. -->
+       from an unexpected URL where styles.css can't resolve. Colours come from
+       CSS variables that the inline script below fills from the visitor's saved
+       theme (with safe defaults if none is set). -->
   <style>
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0;
-      background: #0B0B0D;
-      color: #F2F2F0;
+      background: var(--bg, #0B0B0D);
+      color: var(--text, #F2F2F0);
       font-family: 'Archivo', sans-serif;
       display: flex;
       flex-direction: column;
@@ -36,7 +38,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       letter-spacing: .22em;
-      color: #E5484D;
+      color: var(--accent, #E5484D);
       margin: 0 0 24px;
     }
     h1 {
@@ -46,11 +48,11 @@
       line-height: .9;
       margin: 0;
     }
-    h1 .dot { color: #E5484D; }
+    h1 .dot { color: var(--accent, #E5484D); }
     p.msg {
       font-size: clamp(17px, 2.4vw, 21px);
       line-height: 1.5;
-      color: #b5b5b0;
+      color: var(--muted, #b5b5b0);
       max-width: 460px;
       margin: 28px 0 40px;
     }
@@ -64,15 +66,42 @@
       border-radius: 6px;
       transition: transform .15s ease, background .2s ease, border-color .2s ease;
     }
-    .btn-primary { background: #E5484D; color: #0B0B0D; font-weight: 700; }
+    .btn-primary { background: var(--accent, #E5484D); color: #0B0B0D; font-weight: 700; }
     .btn-primary:hover { transform: translateY(-2px); }
-    .btn-ghost { border: 1px solid #2a2a2e; color: #F2F2F0; }
-    .btn-ghost:hover { border-color: #E5484D; }
+    .btn-ghost { border: 1px solid var(--line, #2a2a2e); color: var(--text, #F2F2F0); }
+    .btn-ghost:hover { border-color: var(--accent, #E5484D); }
     .wordmark {
       position: fixed; top: 28px; left: 32px;
-      font-weight: 800; font-size: 14px; letter-spacing: .16em; text-decoration: none; color: #F2F2F0;
+      font-weight: 800; font-size: 14px; letter-spacing: .16em; text-decoration: none; color: var(--text, #F2F2F0);
     }
   </style>
+
+  <!-- Applies the visitor's saved theme (accent / backdrop / Konami) so the 404
+       matches the rest of the site. Self-contained and wrapped in try/catch, so
+       it can never break the page. -->
+  <script>
+  (function () {
+    try {
+      var MOODS = {
+        'Void':     { bg: '#0B0B0D', text: '#F2F2F0', muted: '#9a9a95', line: '#1e1e22' },
+        'Charcoal': { bg: '#141414', text: '#F2F2F0', muted: '#9a9a95', line: '#2a2a2a' },
+        'Deep Sea': { bg: '#0A0F14', text: '#EAF1F6', muted: '#9aa5b0', line: '#1a2430' },
+        'Paper':    { bg: '#EFEBE2', text: '#1A1A17', muted: '#6b665c', line: '#DCD6C8' },
+        'Fog':      { bg: '#EDEFF2', text: '#14171B', muted: '#5c626b', line: '#D6DADF' },
+        'Sky':      { bg: '#E9EFF4', text: '#12181E', muted: '#586675', line: '#CBD8E2' }
+      };
+      var r = document.documentElement.style;
+      var mood = MOODS[localStorage.getItem('mw_mood')] || MOODS['Void'];
+      r.setProperty('--bg', mood.bg);
+      r.setProperty('--text', mood.text);
+      r.setProperty('--muted', mood.muted);
+      r.setProperty('--line', mood.line);
+      var accent = localStorage.getItem('mw_accent') || '#E5484D';
+      if (localStorage.getItem('mw_arcade') === '1') accent = '#E60012';
+      r.setProperty('--accent', accent);
+    } catch (e) {}
+  })();
+  </script>
 
   <!-- Analytics (GoatCounter, privacy-friendly) -->
   <script data-goatcounter="https://maxx.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

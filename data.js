@@ -303,7 +303,7 @@ const TICKER_WORDS = [
    backdrops offered; each carries a full palette so light and
    dark backdrops both stay readable.
    ============================================================ */
-const ACCENTS = ['#E5484D', '#C6F24E', '#38E1FF', '#FF6B3D', '#C9A227'];
+const ACCENTS = ['#E5484D', '#FF6B3D', '#C9A227', '#C6F24E', '#38E1FF', '#9B5DE5'];
 
 const MOODS = {
   'Void':     { bg: '#0B0B0D', surface: '#101013', surface2: '#0f0f12', text: '#F2F2F0', muted: '#9a9a95', line: '#1e1e22', header: 'rgba(11,11,13,.72)' },

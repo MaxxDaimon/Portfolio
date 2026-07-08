@@ -1,0 +1,14 @@
+
+
+    ███    ███  █████  ██   ██ ██   ██     ██     ██ ███████ ██    ██ ███████ ██████
+    ████  ████ ██   ██  ██ ██   ██ ██      ██     ██ ██      ██    ██ ██      ██   ██
+    ██ ████ ██ ███████   ███     ███       ██  █  ██ █████   ██    ██ █████   ██████
+    ██  ██  ██ ██   ██  ██ ██   ██ ██      ██ ███ ██ ██       ██  ██  ██      ██   ██
+    ██      ██ ██   ██ ██   ██ ██   ██      ███ ███  ███████   ████   ███████ ██   ██
+
+
+    CONGRATULATIONS! you found the humans.txt file!
+
+    To search the internet's vast lands for meaningless text files
+    means you must be a giant nerd. No worries though, being a nerd
+    is cool.

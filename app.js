@@ -183,6 +183,7 @@ function sortedProjects(list) {
 }
 
 let activeFilter = null; // tag key currently filtering the projects page, or null = All
+let countAnimated = false; // project-count ticks up once, on first load
 
 // All distinct tag keys a project carries, across every type.
 function projectTagKeys(p) {
@@ -257,8 +258,15 @@ function renderAllProjects() {
   root.innerHTML = ordered.map((p) => projectBlockHTML(p, numberOf.get(p.slug))).join('');
 
   const count = $('#allProjectsCount');
-  if (count) count.textContent = String(ordered.length).padStart(3, '0')
-    + (activeFilter ? ' SHOWN' : ' PROJECTS LISTED');
+  if (count) {
+    const label = (activeFilter ? ' SHOWN' : ' PROJECTS LISTED');
+    if (!activeFilter && !countAnimated) {
+      countAnimated = true;
+      animateCount(count, ordered.length, label);
+    } else {
+      count.textContent = String(ordered.length).padStart(3, '0') + label;
+    }
+  }
 
   // If the URL has #slug, scroll that block into view below the fixed header.
   if (!activeFilter && location.hash) {
@@ -418,7 +426,13 @@ function renderThemePanel() {
       </div>` : '';
 
   panel.innerHTML = `
-    <div class="tp-head"><span>SITE THEME</span><button class="tp-close" aria-label="Close">×</button></div>
+    <div class="tp-head">
+      <div class="tp-head-titles">
+        <span>SITE THEME</span>
+        <span class="tp-sub">Personalize the look — just for you.</span>
+      </div>
+      <button class="tp-close" aria-label="Close">×</button>
+    </div>
     <div class="tp-body">
       <div class="tp-label">ACCENT</div>
       <div class="tp-row">${swatches}</div>
@@ -718,7 +732,7 @@ function flashCopied(a) {
 /* ---------- Konami code easter egg (Arcade Mode) ---------- */
 // ↑ ↑ ↓ ↓ ← → ← → B A  →  toggles a CRT "arcade" theme. Persists across pages
 // via localStorage; Esc (or entering the code again) exits.
-const ARCADE_GREEN = '#39FF14';
+const ARCADE_GREEN = '#E60012'; // KONAMI RED (variable name kept for simplicity)
 
 function arcadeIsOn() { return document.documentElement.classList.contains('arcade'); }
 function arcadeUnlocked() { return store.get('mw_arcade_unlocked') === '1'; }
@@ -732,24 +746,39 @@ function setArcade(on, announce) {
   } else {
     document.documentElement.classList.remove('arcade');
     if (typeof applyTheme === 'function') applyTheme();
+    setFavicon(false);
   }
 
   if (announce) arcadeToast(on
     ? ['KONAMI MODE UNLOCKED', 'PRESS ESC TO EXIT']
     : ['KONAMI MODE OFF', '']);
-  // Keep the THEME panel's toggle in sync if it's open (reflect the target state).
-  if (typeof renderThemePanel === 'function' && !document.getElementById('themePanel').hidden) {
-    renderThemePanel();
-  }
+  // Keep the THEME panel's toggle in sync if it's open. Toggle the class in
+  // place (don't re-render) so the knob animates via its CSS transition.
+  syncArcadeToggle();
+}
+
+function syncArcadeToggle() {
+  const t = document.getElementById('tpArcade');
+  if (!t) return;
+  const on = arcadeIsOn();
+  t.classList.toggle('on', on);
+  t.setAttribute('aria-checked', on ? 'true' : 'false');
+}
+
+// Swaps the browser-tab icon to the red Konami version while the mode is on.
+function setFavicon(konami) {
+  const link = document.querySelector('link[rel="icon"]');
+  if (!link) return;
+  if (!link.dataset.default) link.dataset.default = link.getAttribute('href');
+  link.setAttribute('href', konami ? 'assets/brand/favicon-konami.png' : link.dataset.default);
 }
 
 // Actually apply the arcade theme (class + neon accent) and sync the panel.
 function commitArcade() {
   document.documentElement.classList.add('arcade');
   document.documentElement.style.setProperty('--accent', ARCADE_GREEN);
-  if (typeof renderThemePanel === 'function' && !document.getElementById('themePanel').hidden) {
-    renderThemePanel();
-  }
+  setFavicon(true);
+  syncArcadeToggle();
 }
 
 // Load the arcade display font once, only when the mode is first used.
@@ -804,6 +833,7 @@ function initKonami() {
     document.documentElement.classList.add('arcade');
     document.documentElement.style.setProperty('--accent', ARCADE_GREEN);
     ensurePixelFont();
+    setFavicon(true);
   }
 
   document.addEventListener('keydown', (e) => {
@@ -868,6 +898,76 @@ function initPrefetch() {
 }
 
 
+// Ticks the project count up from 000 to the real total on first load, with a
+// brief pulse so it's clearly noticeable. Waits a beat after the page settles
+// so the tick-up isn't missed during the initial load.
+function animateCount(el, target, label) {
+  const dur = 1400;      // slower, so the tick-up is easy to follow
+  const delay = 550;     // hold on 000 briefly after load, then start
+  const pad = (n) => String(n).padStart(3, '0');
+  el.textContent = pad(0) + label;
+  setTimeout(() => {
+    const start = performance.now();
+    el.classList.add('count-pulse');
+    function step(now) {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out
+      el.textContent = pad(Math.round(eased * target)) + label;
+      if (t < 1) requestAnimationFrame(step);
+      else setTimeout(() => el.classList.remove('count-pulse'), 250);
+    }
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+
+/* ---------- Konami footer hint: glitch spell-out ---------- */
+// Hovering the footer code for a beat runs a glitch scramble that resolves into
+// "Worth a try ? ? ?"; leaving scrambles back to the arrow symbols.
+function initKonamiHint() {
+  const TARGET = 'Worth a try ? ? ?';
+  const GLITCH = '!<>-_\\/[]{}=+*^?#§±%&';
+  document.querySelectorAll('.konami-hint').forEach((hint) => {
+    hint.removeAttribute('title');
+    const original = hint.textContent;
+    let hold = null, raf = null;
+
+    function scramble(toText) {
+      clearInterval(raf);
+      const from = hint.textContent;
+      const len = Math.max(from.length, toText.length);
+      const q = [];
+      for (let i = 0; i < len; i++) {
+        q.push({
+          fromC: from[i] || '',
+          toC: toText[i] || '',
+          start: Math.floor(Math.random() * 16),
+          end: Math.floor(Math.random() * 16) + 16,
+          ch: null,
+        });
+      }
+      let f = 0;
+      raf = setInterval(() => {
+        let out = '', done = 0;
+        for (const s of q) {
+          if (f >= s.end) { done++; out += s.toC; }
+          else if (f >= s.start) {
+            if (!s.ch || Math.random() < 0.28) s.ch = GLITCH[Math.floor(Math.random() * GLITCH.length)];
+            out += '<i>' + s.ch + '</i>';
+          } else { out += s.fromC; }
+        }
+        hint.innerHTML = out;
+        if (done >= q.length) clearInterval(raf);
+        f++;
+      }, 28);
+    }
+
+    hint.addEventListener('mouseenter', () => { hold = setTimeout(() => scramble(TARGET), 280); });
+    hint.addEventListener('mouseleave', () => { clearTimeout(hold); scramble(original); });
+  });
+}
+
+
 /* ---------- Boot ---------- */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -884,6 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyEmail();
   initKonami();
   initPrefetch();
+  initKonamiHint();
 
   // Mobile nav toggle
   const navToggle = $('#navToggle');
