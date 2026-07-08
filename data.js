@@ -98,8 +98,8 @@ const TAG_TYPES = {
    tags         an object keyed by TAG TYPE. Single-choice types
                 take one key; multiple-choice types take a list:
                     tags: { team:'team', engine:'unreal', focus:['systems','combat'] }
-   poster       image shown for the project (file goes in assets/)
-   video        OPTIONAL .mp4 that plays over the poster; '' = image only
+   poster       image shown for the project (assets/projects/posters/)
+   video        OPTIONAL .mp4 that plays over the poster (assets/projects/videos/); '' = image only
    link         OPTIONAL external URL (e.g. an itch.io page) shown
                 as a button on the project block. '' = no button.
 
@@ -126,8 +126,8 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'Play as a pacifist windsurfing cowboy and save corrupted creatures using your trusty lasso.',
     tags:        { team: 'team', engine: 'unreal', focus: ['threeCs', 'combat'] },
-    poster:      'assets/zima-poster.jpg',
-    video:       'assets/zima.mp4',
+    poster:      'assets/projects/posters/zima-poster.jpg',
+    video:       'assets/projects/videos/zima.mp4',
     link:        'https://buas.itch.io/zima',
 
     year:         '2025',
@@ -153,8 +153,8 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'A beautiful, minimal RTS game.',
     tags:        { team: 'team', engine: 'unreal', focus: [] },
-    poster:      'assets/azura-poster.jpg',
-    video:       'assets/azura-video.mp4',
+    poster:      'assets/projects/posters/azura-poster.jpg',
+    video:       'assets/projects/videos/azura-video.mp4',
     link:        'https://buas.itch.io/team-gotham',
 
     year:    '',
@@ -180,8 +180,8 @@ const PROJECTS = [
     showOnHome:  false,
     description: 'A short, action packed co-op rafting game.',
     tags:        { team: 'gamejam', engine: 'unreal', focus: [] },
-    poster:      'assets/adrift-poster.jpg',
-    video:       'assets/adrift-video.mp4',
+    poster:      'assets/projects/posters/adrift-poster.jpg',
+    video:       'assets/projects/videos/adrift-video.mp4',
     link:        'https://twenmod.itch.io/adrift',
 
     year:    '',
@@ -206,8 +206,8 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'A physics based deck building tower stacker.',
     tags:        { team: 'gamejam', engine: 'unity', focus: [] },
-    poster:      'assets/tabletoptumble-poster.jpg',
-    video:       'assets/tabletoptumble-video.mp4',
+    poster:      'assets/projects/posters/tabletoptumble-poster.jpg',
+    video:       'assets/projects/videos/tabletoptumble-video.mp4',
     link:        'https://twenmod.itch.io/tabletop-tumble',
 
     year:    '',

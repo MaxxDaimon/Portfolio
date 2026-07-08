@@ -40,7 +40,7 @@ function tagChips(tags, cls) {
 
 function media(project) {
   const source = project.video ? `<source src="${project.video}" type="video/mp4">` : '';
-  return `<video autoplay muted loop playsinline poster="${project.poster}">${source}</video>`;
+  return `<video autoplay muted loop playsinline preload="none" poster="${project.poster}">${source}</video>`;
 }
 
 // Where a project's external link points (used for the block button).
@@ -225,19 +225,34 @@ function resolveHeroProjects() {
 }
 
 function heroLayer(item, useVideo, visible) {
+  // Poster mode: a plain background-image div. This is far more reliable across
+  // browsers than a <video> with a poster but no source (Safari often paints
+  // that black), which caused the hero to sometimes fade to black.
+  if (!useVideo || !item.video) {
+    const d = document.createElement('div');
+    d.className = 'hero-media hero-layer';
+    if (item.poster) {
+      d.style.backgroundImage = `url("${item.poster}")`;
+      d.style.backgroundSize = 'cover';
+      d.style.backgroundPosition = 'center';
+    }
+    d.style.transition = 'opacity 1.1s ease';
+    d.style.opacity = visible ? '1' : '0';
+    d.style.zIndex = visible ? '1' : '0';
+    return d;
+  }
+
+  // Video mode: real <video> with a poster fallback while it buffers.
   const v = document.createElement('video');
   v.className = 'hero-media hero-layer';
   v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
   if (item.poster) v.setAttribute('poster', item.poster);
-  // Fade between poster images; hard-cut between videos.
-  v.style.transition = useVideo ? 'none' : 'opacity 1.1s ease';
+  v.style.transition = 'none'; // hard-cut between videos
   v.style.opacity = visible ? '1' : '0';
   v.style.zIndex = visible ? '1' : '0';
-  if (useVideo && item.video) {
-    const s = document.createElement('source');
-    s.src = item.video; s.type = 'video/mp4';
-    v.appendChild(s);
-  }
+  const s = document.createElement('source');
+  s.src = item.video; s.type = 'video/mp4';
+  v.appendChild(s);
   return v;
 }
 
@@ -261,7 +276,7 @@ function renderHero() {
     return layer;
   });
 
-  try { layers[0].play(); } catch (e) {}
+  try { if (layers[0].play) layers[0].play(); } catch (e) {}
 
   if (layers.length < 2) return;                       // nothing to rotate
 
@@ -270,7 +285,7 @@ function renderHero() {
     const next = (idx + 1) % layers.length;
     layers[idx].style.opacity = '0'; layers[idx].style.zIndex = '0';
     layers[next].style.opacity = '1'; layers[next].style.zIndex = '1';
-    try { layers[next].currentTime = 0; layers[next].play(); } catch (e) {}
+    try { if (layers[next].play) { layers[next].currentTime = 0; layers[next].play(); } } catch (e) {}
     idx = next;
   }, (HERO.intervalSeconds || 6) * 1000);
 }
@@ -361,7 +376,7 @@ function renderThemePanel() {
   });
 }
 
-// Briefly enable a global colour transition so the new theme eases in.
+// Briefly enable a global color transition so the new theme eases in.
 let _themeAnimTimer = null;
 function pulseThemeAnim() {
   const el = document.documentElement;
@@ -392,7 +407,7 @@ function closePanel() { if ($('#themePanel')) $('#themePanel').hidden = true; }
 /* ---------- Portrait carousel ---------- */
 // Swaps the About portrait between a set of photos via arrows / dots.
 // Add or remove file paths here to change the set.
-const PORTRAITS = ['assets/portrait-2.jpg', 'assets/portrait-1.jpg'];
+const PORTRAITS = ['assets/portraits/portrait-2.jpg', 'assets/portraits/portrait-1.jpg'];
 
 function initPortraitCarousel() {
   const box = document.querySelector('[data-portrait]');
@@ -487,13 +502,137 @@ function initReveal() {
     entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  }, { threshold: 0.01, rootMargin: '0px 0px 12% 0px' });
 
   targets.forEach((el, n) => {
     el.classList.add('reveal');
-    el.style.transitionDelay = Math.min(n % 4, 3) * 60 + 'ms'; // slight stagger within a group
+    el.style.transitionDelay = Math.min(n % 3, 2) * 50 + 'ms'; // slight stagger within a group
     io.observe(el);
   });
+
+  // Failsafe: whatever hasn't revealed after 1.2s (observer glitch, odd
+  // Safari timing, etc.) is shown anyway, so content can never get stuck hidden.
+  setTimeout(() => {
+    targets.forEach((el) => el.classList.add('is-visible'));
+  }, 1200);
+}
+
+
+/* ---------- Nav: current-page + scroll-spy highlighting ---------- */
+// Adds .nav-active to the nav link matching the current page, and (on the home
+// page) tracks which section is in view. The RESUME link keeps its own accent
+// styling and is never touched here.
+function initNavActive() {
+  const links = [...document.querySelectorAll('.nav a')];
+  if (!links.length) return;
+  const path = (location.pathname.split('/').pop() || 'index.html');
+
+  // Static highlight for full-page links (projects.html, about.html, articles.html)
+  links.forEach((a) => {
+    const href = (a.getAttribute('href') || '');
+    if (/\.html$/.test(href) && href.split('#')[0] === path) a.classList.add('nav-active');
+  });
+
+  // Scroll-spy on the home page: highlight whichever section currently fills
+  // the most of the viewport (HOME → PROJECTS → ABOUT → CONTACT). This is
+  // determined by visible area, so it's correct everywhere — including the
+  // bottom of the page, where CONTACT can't reach the top but still dominates
+  // the visible space.
+  const isHome = (path === 'index.html' || path === '');
+  if (!isHome) return;
+
+  const nav = (href) => document.querySelector('.nav a[href="' + href + '"]');
+  const spy = [
+    { el: document.querySelector('.hero'),    link: nav('#top') },
+    { el: document.getElementById('work'),    link: nav('projects.html') },
+    { el: document.getElementById('about'),   link: nav('about.html') },
+    { el: document.getElementById('contact'), link: nav('#contact') },
+  ].filter((s) => s.el && s.link);
+  if (!spy.length) return;
+
+  let current = null;
+  const update = () => {
+    const vh = window.innerHeight;
+    let best = spy[0];
+    let bestVisible = -1;
+    for (const s of spy) {
+      const r = s.el.getBoundingClientRect();
+      const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+      if (visible > bestVisible) { bestVisible = visible; best = s; }
+    }
+    // Bottom-of-page exception: once the page is scrolled to (or very near) the
+    // end, force the last section. A short final section like CONTACT can never
+    // fill more of the viewport than the tall one above it, so pure coverage
+    // would never select it — but reaching the bottom clearly means you're there.
+    const docH = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    if (window.innerHeight + window.scrollY >= docH - 2) {
+      best = spy[spy.length - 1];
+    }
+    if (best !== current) {
+      current = best;
+      spy.forEach((s) => s.link.classList.toggle('nav-active', s === best));
+    }
+  };
+
+  // Throttled with a trailing call, and NOT using requestAnimationFrame (which
+  // browsers pause in background/offscreen frames, freezing the highlight).
+  let scheduled = false;
+  const onScroll = () => {
+    if (scheduled) return;
+    scheduled = true;
+    setTimeout(() => { scheduled = false; update(); }, 50);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
+
+/* ---------- Copy-email-to-clipboard ---------- */
+// Clicking a mailto link copies the address and briefly shows "COPIED".
+// The default mailto still fires, so visitors with a mail app get both.
+function initCopyEmail() {
+  document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+    a.addEventListener('click', () => {
+      const email = a.getAttribute('href').replace('mailto:', '').split('?')[0];
+      copyText(email);
+      flashCopied(a);
+    });
+  });
+}
+
+// Copy with a clipboard-API path and an execCommand fallback for non-secure
+// contexts / older browsers.
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+  } else {
+    legacyCopy(text);
+  }
+}
+function legacyCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  } catch (e) { /* no-op */ }
+}
+function flashCopied(a) {
+  if (a.dataset.flashing) return;
+  a.dataset.flashing = '1';
+  const original = a.textContent;
+  a.textContent = 'COPIED ✓';
+  a.classList.add('copied');
+  setTimeout(() => {
+    a.textContent = original;
+    a.classList.remove('copied');
+    delete a.dataset.flashing;
+  }, 1500);
 }
 
 
@@ -508,6 +647,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTicker();
   initPortraitCarousel();
   initReveal();
+  initNavActive();
+  initCopyEmail();
 
   // Mobile nav toggle
   const navToggle = $('#navToggle');

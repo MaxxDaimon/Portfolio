@@ -13,11 +13,23 @@ index.html     Home page (hero, projects preview, about preview, contact)
 projects.html  Every project as a full expanded block
 about.html     About page (intro, skills & tools, experience)
 articles.html  Articles / write-ups (data-driven; shows a placeholder when empty)
+styleguide.html  Visual reference for the design system (not in the nav)
+404.html       Shown for broken links
 data.js        ALL content that changes: projects, tags, articles, ticker, theme
 app.js         The engine that renders data.js. Normally left alone
-styles.css     All styling. Default colours live at the top under :root
-assets/        All images and videos
+styles.css     All styling. Default colors live at the top under :root
+assets/        All images, video and documents — organized into subfolders:
+  projects/posters/   project poster images (*-poster.jpg)
+  projects/videos/    project gameplay clips (*.mp4)
+  articles/           images for article posts (add as needed)
+  portraits/          about-page portrait photos
+  hero/               hero background poster + optional hero.mp4
+  brand/              favicon + touch icons
+  documents/          resume.pdf
 ```
+
+When adding a file, drop it in the matching subfolder and reference it with the
+full path, e.g. `assets/projects/posters/game-name.jpg`.
 
 Almost all content editing happens in **`data.js`**. A small file count is
 normal for a site like this.
@@ -54,8 +66,8 @@ values:
   showOnHome:  true,                   // true = appears on the home page
   description: 'One or two sentences, shown on the card and the project block.',
   tags:        { team: 'solo', engine: 'unity', focus: ['systems'] },
-  poster:      'assets/game-name.jpg', // still image (file goes in assets/)
-  video:       '',                     // '' = image only; add an .mp4 path to play video
+  poster:      'assets/projects/posters/game-name.jpg', // still image
+  video:       '',                     // '' = image only; else 'assets/projects/videos/game-name.mp4'
   link:        '',                     // itch.io / external URL — adds a VISIT button
 
   // Expanded-block content (all optional — leave empty to skip that part)
@@ -150,9 +162,9 @@ if the wording changes.
 ## Portrait
 
 The About portrait is a small carousel. Its image set is the `PORTRAITS` list at
-the top of the carousel section in `app.js`. Add or remove `assets/…` paths to
-change the photos; the first one is the default. It auto-advances slowly and
-pauses on hover. Portraits are square (1:1).
+the top of the carousel section in `app.js`. Add or remove `assets/portraits/…`
+paths to change the photos; the first one is the default. It auto-advances slowly
+and pauses on hover. Portraits are square (1:1).
 
 ---
 
@@ -172,21 +184,21 @@ Keep files reasonably small for fast loading.
   plays muted and looping over it. Videos follow the same 16:9 ratio.
 - GitHub rejects single files over 100 MB, so clips should be short and
   compressed.
-- The hero fills the whole screen; keep the important part centred as the edges
+- The hero fills the whole screen; keep the important part centered as the edges
   crop on different screen shapes.
 
 ---
 
 ## Resume
 
-The RESUME button opens `assets/resume.pdf`. Dropping a file with that exact
-name into `assets/` makes the button work.
+The RESUME button opens `assets/documents/resume.pdf`. Dropping a file with that
+exact name into `assets/documents/` makes the button work.
 
 ---
 
 ## Theme
 
-Default colours are the `:root` variables at the top of `styles.css` (`--accent`,
+Default colors are the `:root` variables at the top of `styles.css` (`--accent`,
 `--bg`, …). Visitors can also pick their own via the THEME button; the accent and
 backdrop options offered there are `ACCENTS` and `MOODS` in `data.js` (the first
 accent is the default).

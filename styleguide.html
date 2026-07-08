@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style Guide — Maxx Wever</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .sg-wrap { max-width: 1100px; margin: 0 auto; padding: 120px 40px 100px; }
+    .sg-lede { font-size: 19px; line-height: 1.6; color: var(--muted); max-width: 640px; margin: 20px 0 0; }
+    .sg-section { padding: 56px 0; border-top: 1px solid var(--line); }
+    .sg-section:first-of-type { border-top: 0; }
+    .sg-h2 { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+    .sg-note { font-size: 14px; line-height: 1.6; color: var(--muted); margin: 0 0 28px; max-width: 640px; }
+
+    .sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+    .sg-swatch { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+    .sg-chip { height: 84px; }
+    .sg-swatch-meta { padding: 12px 14px; }
+    .sg-swatch-name { font-size: 14px; font-weight: 700; margin: 0 0 2px; }
+    .sg-swatch-hex { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+
+    .sg-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .sg-theme { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .sg-theme-preview { padding: 18px; }
+    .sg-theme-bars { display: flex; gap: 6px; margin-top: 12px; }
+    .sg-theme-bars span { flex: 1; height: 10px; border-radius: 2px; }
+    .sg-theme-label { padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      letter-spacing: .08em; border-top: 1px solid; }
+
+    .sg-type-row { display: flex; align-items: baseline; gap: 24px; padding: 18px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+    .sg-type-row:first-child { border-top: 0; }
+    .sg-type-spec { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); width: 240px; flex-shrink: 0; }
+
+    .sg-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .sg-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .sg-facts { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px;
+      padding: 4px 20px; background: var(--surface); max-width: 360px; }
+    .sg-facts .fact { display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+      padding: 14px 0; border-top: 1px solid var(--line); }
+    .sg-facts .fact:first-child { border-top: 0; }
+    .sg-facts dt { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .04em; color: var(--muted); }
+    .sg-facts dd { margin: 0; font-size: 15px; font-weight: 600; }
+
+    .sg-motion { display: grid; grid-template-columns: 1fr; gap: 0; }
+    .sg-motion-row { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 16px 0;
+      border-top: 1px solid var(--line); font-size: 15px; line-height: 1.5; }
+    .sg-motion-row:first-child { border-top: 0; }
+    .sg-motion-name { font-weight: 700; }
+    .sg-motion-row p { margin: 0; color: var(--muted); }
+
+    .sg-back { display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .08em; color: var(--muted); margin-bottom: 40px; }
+    .sg-back:hover { color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .sg-wrap { padding: 100px 24px 80px; }
+      .sg-grid2 { grid-template-columns: 1fr; }
+      .sg-type-spec { width: 100%; }
+      .sg-motion-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+
+  <!-- Analytics (GoatCounter, privacy-friendly) -->
+  <script data-goatcounter="https://maxx.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand-lockup">
+      <a href="index.html" class="brand">MAXX WEVER</a>
+      <span class="brand-role">Style Guide</span>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="mainNav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="mainNav">
+      <a href="index.html#top">HOME</a>
+      <a href="projects.html">PROJECTS</a>
+      <a href="about.html">ABOUT</a>
+      <a href="articles.html">ARTICLES</a>
+      <a href="index.html#contact">CONTACT</a>
+      <button id="themeBtn" class="theme-btn" aria-label="Site theme">
+        <span class="theme-dot"></span>THEME
+      </button>
+    </nav>
+  </header>
+
+  <div id="themePanel" class="theme-panel" hidden></div>
+
+  <main class="sg-wrap">
+    <a href="index.html" class="sg-back">← BACK TO SITE</a>
+    <h1 style="font-size:clamp(40px,6vw,72px);font-weight:800;letter-spacing:-.03em;margin:0;line-height:1;">Style Guide<span class="accent">.</span></h1>
+    <p class="sg-lede">The visual system behind this portfolio — colors, type, components and motion. Everything here is pulled from the same <code>styles.css</code> the live site uses, so this page re-themes with the THEME button too.</p>
+
+    <!-- COLORS -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Accent palette</h2>
+      <p class="sg-note">The signature color. Red is the default; visitors can switch to any of these from the THEME panel. Each is chosen to stay legible on both dark and light backdrops.</p>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="sg-chip" style="background:#E5484D"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">Signal Red <span style="color:var(--accent)">(default)</span></p><span class="sg-swatch-hex">#E5484D</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#C6F24E"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">Acid Lime</p><span class="sg-swatch-hex">#C6F24E</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#38E1FF"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">Cyan</p><span class="sg-swatch-hex">#38E1FF</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#FF6B3D"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">Ember</p><span class="sg-swatch-hex">#FF6B3D</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#C9A227"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">Gold</p><span class="sg-swatch-hex">#C9A227</span></div></div>
+      </div>
+    </section>
+
+    <!-- NEUTRAL TOKENS -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Neutral tokens (default theme)</h2>
+      <p class="sg-note">The surface and text roles used everywhere as CSS variables. These shift per backdrop; the values below are the default "Void" theme.</p>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="sg-chip" style="background:#0B0B0D"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--bg</p><span class="sg-swatch-hex">#0B0B0D</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#101013"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--surface</p><span class="sg-swatch-hex">#101013</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#0f0f12"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--surface2</p><span class="sg-swatch-hex">#0f0f12</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#1e1e22"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--line</p><span class="sg-swatch-hex">#1e1e22</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#9a9a95"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--muted</p><span class="sg-swatch-hex">#9a9a95</span></div></div>
+        <div class="sg-swatch"><div class="sg-chip" style="background:#F2F2F0"></div><div class="sg-swatch-meta"><p class="sg-swatch-name">--text</p><span class="sg-swatch-hex">#F2F2F0</span></div></div>
+      </div>
+    </section>
+
+    <!-- BACKDROPS -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Backdrops</h2>
+      <p class="sg-note">Six full-theme presets in the THEME panel — three dark, three light. Each remaps the neutral tokens together so contrast stays correct.</p>
+      <div class="sg-themes">
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#0B0B0D"><span style="color:#F2F2F0;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#101013"></span><span style="background:#0f0f12"></span><span style="background:#1e1e22"></span></div></div><div class="sg-theme-label" style="background:#0B0B0D;color:#9a9a95;border-color:#1e1e22">VOID · dark</div></div>
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#141414"><span style="color:#F2F2F0;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#1a1a1a"></span><span style="background:#181818"></span><span style="background:#2a2a2a"></span></div></div><div class="sg-theme-label" style="background:#141414;color:#9a9a95;border-color:#2a2a2a">CHARCOAL · dark</div></div>
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#0A0F14"><span style="color:#EAF1F6;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#0F1620"></span><span style="background:#0C121A"></span><span style="background:#1a2430"></span></div></div><div class="sg-theme-label" style="background:#0A0F14;color:#9aa5b0;border-color:#1a2430">DEEP SEA · dark</div></div>
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#EFEBE2"><span style="color:#1A1A17;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#F6F3EC"></span><span style="background:#E7E2D6"></span><span style="background:#DCD6C8"></span></div></div><div class="sg-theme-label" style="background:#EFEBE2;color:#6b665c;border-color:#DCD6C8">PAPER · light</div></div>
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#EDEFF2"><span style="color:#14171B;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#F8F9FB"></span><span style="background:#E3E6EA"></span><span style="background:#D6DADF"></span></div></div><div class="sg-theme-label" style="background:#EDEFF2;color:#5c626b;border-color:#D6DADF">FOG · light</div></div>
+        <div class="sg-theme"><div class="sg-theme-preview" style="background:#E9EFF4"><span style="color:#12181E;font-weight:700">Aa</span><div class="sg-theme-bars"><span style="background:#F5F9FC"></span><span style="background:#DCE6EE"></span><span style="background:#CBD8E2"></span></div></div><div class="sg-theme-label" style="background:#E9EFF4;color:#586675;border-color:#CBD8E2">SKY · light</div></div>
+      </div>
+    </section>
+
+    <!-- TYPOGRAPHY -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Typography</h2>
+      <p class="sg-note"><strong style="color:var(--text)">Archivo</strong> for everything structural (headings, body), <strong style="color:var(--text)">JetBrains Mono</strong> for labels, tags, metadata and eyebrows. The mono adds the "technical" flavour that fits a game-tools designer.</p>
+      <div class="sg-type-row"><span class="sg-type-spec">Archivo 800 · clamp→72px</span><span style="font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1">Display heading</span></div>
+      <div class="sg-type-row"><span class="sg-type-spec">Archivo 800 · 40px</span><span style="font-size:40px;font-weight:800;letter-spacing:-.02em">Section title</span></div>
+      <div class="sg-type-row"><span class="sg-type-spec">JetBrains Mono · 13px · .14em</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Eyebrow label</span></div>
+      <div class="sg-type-row"><span class="sg-type-spec">Archivo 400 · 17px</span><span style="font-size:17px;line-height:1.6;max-width:440px;color:var(--muted)">Body copy sets the calmer reading rhythm — 1.6 line-height, muted color, generous measure.</span></div>
+      <div class="sg-type-row"><span class="sg-type-spec">JetBrains Mono · 12px · .08em</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;color:var(--muted)">metadata · caption · 004 projects listed</span></div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Buttons</h2>
+      <p class="sg-note">Two weights. Primary is the accent call-to-action; ghost is the outlined secondary. Mono label, subtle lift on hover.</p>
+      <div class="sg-row">
+        <a class="btn btn-primary" href="#">PRIMARY →</a>
+        <a class="btn btn-ghost" href="#">GHOST ↗</a>
+      </div>
+    </section>
+
+    <!-- TAGS + FACTS -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Chips &amp; facts panel</h2>
+      <p class="sg-note">The pill chips and the project facts panel — a bordered key/value list used on each project block.</p>
+      <div class="sg-grid2">
+        <div class="sg-row" style="align-items:flex-start">
+          <span class="tag">SYSTEMS</span>
+          <span class="tag">UNREAL ENGINE</span>
+          <span class="tag">SOLO</span>
+        </div>
+        <dl class="sg-facts">
+          <div class="fact"><dt>Role</dt><dd>3Cs Designer</dd></div>
+          <div class="fact"><dt>Timeframe</dt><dd>8 weeks · 2026</dd></div>
+          <div class="fact"><dt>Team Size</dt><dd>16 developers</dd></div>
+          <div class="fact"><dt>Engine</dt><dd>Unreal Engine</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- MOTION -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Motion</h2>
+      <p class="sg-note">Motion is subtle and purposeful — everything respects <code>prefers-reduced-motion</code> and falls back gracefully.</p>
+      <div class="sg-motion">
+        <div class="sg-motion-row"><span class="sg-motion-name">Scroll reveal</span><p>Sections fade + rise 32px as they enter view · 0.8s ease · 1.2s failsafe so content never stays hidden.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Ticker</span><p>Skills strip scrolls continuously under the hero · seamless loop.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Theme micro-interactions</span><p>Swatch spring on hover/press · animated active ring · accent ripple on apply · 0.45s global color ease.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Portrait carousel</span><p>Cross-fades between photos · slow 8s auto-advance · pauses on hover.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Hero rotation</span><p>Poster mode cross-fades; video mode hard-cuts · configurable interval.</p></div>
+      </div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section class="sg-section">
+      <h2 class="sg-h2">Layout tokens</h2>
+      <div class="sg-motion">
+        <div class="sg-motion-row"><span class="sg-motion-name">Container</span><p>max-width 1200px, centered.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Section padding</span><p>80px vertical (desktop) → 80px 24px (mobile).</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Media ratio</span><p>16:9 for all project and hero media; 1:1 for portraits.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Radius</span><p>6–8px on cards, panels and media; pill (20px) on chips.</p></div>
+        <div class="sg-motion-row"><span class="sg-motion-name">Project columns</span><p>Two-up on the projects page via CSS subgrid so paired blocks align row-by-row; single column on mobile.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 MAXX WEVER</span><span>STYLE GUIDE</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

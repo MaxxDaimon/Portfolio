@@ -7,7 +7,7 @@
    ============================================================ */
 
 :root {
-  --accent:   #E5484D;   /* signature colour (default: red) */
+  --accent:   #E5484D;   /* signature color (default: red) */
   --bg:       #0B0B0D;   /* page background   */
   --surface:  #101013;   /* cards / panels    */
   --surface2: #0f0f12;   /* alt sections      */
@@ -58,6 +58,7 @@ a { color: inherit; }
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 56px;
   background: var(--header-bg);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
@@ -67,8 +68,13 @@ a { color: inherit; }
   color: var(--muted); white-space: nowrap; padding-left: 16px; border-left: 1px solid var(--line); }
 .nav { display: flex; gap: 30px; align-items: center;
   font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .1em; color: var(--muted); }
-.nav a { text-decoration: none; }
-.nav a:last-of-type { color: var(--accent); }
+.nav a { text-decoration: none; position: relative; transition: color .2s ease; }
+.nav a:hover { color: var(--text); }
+.nav a:last-of-type, .nav a:last-of-type:hover { color: var(--accent); }
+.nav a.nav-active { color: var(--text); }
+.nav a.nav-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -7px;
+  height: 2px; background: var(--text); border-radius: 2px; }
+.btn.copied { background: var(--accent); color: #0B0B0D; border-color: var(--accent); }
 
 /* Hamburger toggle — hidden on desktop, shown on mobile */
 .nav-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px;
@@ -124,7 +130,7 @@ a { color: inherit; }
   animation: tp-ripple .55s ease-out forwards; }
 @keyframes tp-ripple { to { transform: translate(-50%, -50%) scale(9); opacity: 0; } }
 
-/* Brief global colour ease when the theme changes (added/removed by JS so it
+/* Brief global color ease when the theme changes (added/removed by JS so it
    never interferes with hover states) */
 .theme-anim * { transition: background-color .45s ease, border-color .45s ease,
   color .45s ease, box-shadow .45s ease, fill .45s ease !important; }
@@ -133,7 +139,7 @@ a { color: inherit; }
 .tp-reset:hover { color: var(--text); border-color: var(--accent); }
 
 /* ---------- Hero ---------- */
-.hero { position: relative; height: 100vh; min-height: 720px; width: 100%; overflow: hidden; }
+.hero { position: relative; height: 100vh; height: 100dvh; min-height: 640px; width: 100%; overflow: hidden; }
 .hero-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: opacity 1.2s ease; }
 .hero-scrim { position: absolute; inset: 0; pointer-events: none;
   background:
@@ -205,7 +211,8 @@ a { color: inherit; }
 .portrait-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35);
   background: rgba(11,11,13,.55); color: #fff; font-size: 22px; line-height: 1; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   opacity: 0; transition: opacity .25s ease, background .2s ease, border-color .2s ease; }
 .portrait-carousel:hover .portrait-arrow, .portrait-arrow:focus-visible { opacity: 1; }
 .portrait-arrow:hover { background: var(--accent); border-color: var(--accent); color: #0B0B0D; }
@@ -357,10 +364,12 @@ a.article-card:hover { border-color: var(--accent); transform: translateY(-2px);
     flex-direction: column; align-items: flex-start; gap: 4px;
     background: var(--surface); border-bottom: 1px solid var(--line);
     padding: 12px 24px 20px; font-size: 13px;
+    max-height: calc(100vh - 71px); max-height: calc(100dvh - 71px); overflow-y: auto;
     display: none; }
   .nav.open { display: flex; }
   .nav a { padding: 12px 0; width: 100%; border-bottom: 1px solid var(--line); }
   .nav a:last-of-type { border-bottom: 0; }
+  .nav a.nav-active::after { display: none; }
   .theme-btn { margin-top: 12px; }
   .section { padding: 80px 24px; }
   .hero-content { padding: 0 24px 48px; }
