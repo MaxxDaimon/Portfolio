@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- If the site moves to a custom domain, replace the base URL in every <loc>. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://maxxdw.github.io/Portfolio/index.html</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://maxxdw.github.io/Portfolio/projects.html</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://maxxdw.github.io/Portfolio/about.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://maxxdw.github.io/Portfolio/articles.html</loc>
+    <priority>0.5</priority>
+  </url>
+</urlset>

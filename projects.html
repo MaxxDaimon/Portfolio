@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.className += ' js-fade'; document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('page-anim'); });</script>
   <title>Projects — Maxx Wever</title>
   <meta name="description" content="All projects — portfolio of Maxx Wever, technical game designer.">
 
@@ -66,12 +67,15 @@
   <!-- All projects (built by app.js from data.js) -->
   <section class="section">
     <div class="container">
+      <div class="proj-filters" id="projectFilters"></div>
       <div id="allProjects"></div>
     </div>
   </section>
 
   <footer class="footer">
-    <span>© 2026 MAXX WEVER</span><span>BREDA, NL</span>
+    <span>© 2026 MAXX WEVER</span>
+    <span class="konami-hint" title="worth a try…">↑ ↑ ↓ ↓ ← → ← → B A</span>
+    <span>BREDA, NL</span>
   </footer>
 
   <script src="data.js"></script>

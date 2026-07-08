@@ -21,6 +21,15 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+
+/* Cross-page fade. An inline <head> script adds .js-fade so the page starts
+   hidden ONLY when JS is present (no-JS visitors see it normally), then adds
+   .page-anim to fade it in quickly. There is no fade-OUT — clicking a link
+   navigates instantly, so there's never a fade-to-black gap between pages. */
+.page-anim { animation: page-in .16s ease both; }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+html.js-fade body { opacity: 0; }
+html.js-fade body.page-anim { opacity: 1; }
 body {
   margin: 0;
   background: var(--bg);
@@ -137,6 +146,18 @@ a { color: inherit; }
 .tp-reset { width: 100%; padding: 11px; background: transparent; border: 1px solid var(--line); border-radius: 6px;
   color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; cursor: pointer; }
 .tp-reset:hover { color: var(--text); border-color: var(--accent); }
+
+/* Konami mode iOS-style toggle */
+.tp-switchrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.tp-toggle { position: relative; width: 48px; height: 28px; flex-shrink: 0; padding: 0; cursor: pointer;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--surface2);
+  transition: background .25s ease, border-color .2s ease, box-shadow .2s ease; }
+.tp-toggle:hover { border-color: #39FF14; box-shadow: 0 0 0 3px rgba(57,255,20,.18); }
+.tp-toggle-knob { position: absolute; top: 50%; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  transform: translateY(-50%); background: var(--muted);
+  transition: transform .26s cubic-bezier(.34,1.45,.5,1), background .25s ease; }
+.tp-toggle.on { background: #39FF14; border-color: #39FF14; }
+.tp-toggle.on .tp-toggle-knob { transform: translateY(-50%) translateX(20px); background: #050805; }
 
 /* ---------- Hero ---------- */
 .hero { position: relative; height: 100vh; height: 100dvh; min-height: 640px; width: 100%; overflow: hidden; }
@@ -297,9 +318,150 @@ a.article-card:hover { border-color: var(--accent); transform: translateY(-2px);
   .reveal.is-visible { opacity: 1; transform: none; }
 }
 
+/* ---------- Arcade Mode (Konami easter egg) ---------- */
+/* Toggled by the ↑↑↓↓←→←→ B A sequence; class lives on <html>. */
+html.arcade {
+  --accent: #39FF14;   /* neon phosphor green takes over every accent */
+}
+/* CRT scanlines + faint vignette, drawn above content but click-through */
+html.arcade body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0px, rgba(0,0,0,.16) 1px, transparent 2px, transparent 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%);
+  mix-blend-mode: multiply;
+}
+html.arcade body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 301;
+  pointer-events: none;
+  box-shadow: inset 0 0 120px rgba(57,255,20,.10);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html.arcade body::after { animation: crt-flicker 5s steps(60) infinite; }
+}
+@keyframes crt-flicker { 0%,100% { opacity: 1; } 50% { opacity: .94; } 97% { opacity: .88; } }
+
+/* Pixel/arcade typography — applied to display + label text while active.
+   Press Start 2P renders large for its point size, so the big headings get
+   reduced sizes and roomier line-height to stay readable and not overflow. */
+html.arcade .hero-title,
+html.arcade .page-title,
+html.arcade .contact-title,
+html.arcade .proj-title,
+html.arcade .skill-head,
+html.arcade .featured h3,
+html.arcade .eyebrow,
+html.arcade .kicker,
+html.arcade .nav,
+html.arcade .btn,
+html.arcade .tag,
+html.arcade .ticker {
+  font-family: 'Press Start 2P', 'JetBrains Mono', monospace;
+}
+html.arcade .hero-title { font-size: clamp(18px, 2.6vw, 34px); line-height: 1.6; letter-spacing: 0; }
+html.arcade .page-title { font-size: clamp(24px, 4vw, 44px); line-height: 1.4; }
+html.arcade .contact-title { font-size: clamp(26px, 4.5vw, 52px); line-height: 1.4; }
+html.arcade .proj-title { font-size: clamp(15px, 2vw, 26px); line-height: 1.5; }
+html.arcade .featured h3 { font-size: clamp(16px, 2.4vw, 30px); line-height: 1.4; }
+html.arcade .skill-head { font-size: 16px; line-height: 1.6; }
+html.arcade .eyebrow, html.arcade .kicker { font-size: 10px; line-height: 1.8; }
+html.arcade .nav { font-size: 9px; }
+html.arcade .btn { font-size: 9px; }
+html.arcade .tag { font-size: 8px; }
+html.arcade .ticker { font-size: 12px; }
+
+/* CRT power-on. The theme is NOT applied up front; instead a green scanline
+   overlay (.crt-reveal) wipes in top→bottom via clip-path, led by a bright sweep
+   bar (.crt-poweron). The real .arcade theme is committed by JS just as the
+   sweep nears the bottom, so nothing arcade appears ahead of the bar. */
+.crt-reveal {
+  position: fixed; inset: 0; z-index: 329; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0px, rgba(0,0,0,.16) 1px, transparent 2px, transparent 3px),
+    rgba(57,255,20,.10);
+  clip-path: inset(0 0 100% 0);
+  animation: crt-reveal .7s linear forwards;
+}
+@keyframes crt-reveal { to { clip-path: inset(0 0 0 0); } }
+
+.crt-poweron { position: fixed; inset: 0; z-index: 330; pointer-events: none; overflow: hidden; }
+.crt-poweron::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 24%;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(57,255,20,.10) 35%,
+    rgba(180,255,190,.35) 48%,
+    rgba(255,255,255,.9) 50%,
+    rgba(180,255,190,.35) 52%,
+    rgba(57,255,20,.10) 65%,
+    transparent 100%);
+  transform: translateY(-110%);
+  animation: crt-sweep .7s linear forwards;
+}
+@keyframes crt-sweep {
+  0%   { transform: translateY(-110%); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(320%); opacity: 0; }
+}
+
+/* Toast shown when a code toggles arcade mode */
+.arcade-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 320;
+  background: #050805;
+  border: 1px solid #39FF14;
+  color: #39FF14;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 14px 22px;
+  border-radius: 6px;
+  box-shadow: 0 0 24px rgba(57,255,20,.4);
+  opacity: 0;
+  transition: opacity .3s ease, transform .3s ease;
+  text-align: center;
+  line-height: 1.5;
+}
+.arcade-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.arcade-toast .sub { display: block; color: #7CFF6B; font-size: 10px; letter-spacing: .1em; margin-top: 4px; opacity: .8; }
+
 /* ---------- Footer ---------- */
-.footer { padding: 28px 56px; display: flex; justify-content: space-between;
+.footer { padding: 28px 56px; display: flex; justify-content: space-between; align-items: center; gap: 16px;
   font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+.konami-hint { padding: 4px 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .18em;
+  color: var(--muted); opacity: .35; transition: opacity .25s ease, color .25s ease; white-space: nowrap; }
+.konami-hint:hover { opacity: 1; color: var(--accent); }
+
+/* ---------- Project filters ---------- */
+.proj-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 44px; }
+.filter-group { display: flex; align-items: center; gap: 10px; }
+.filter-group-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); opacity: .7; }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-chip { cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: .06em; padding: 8px 14px; border-radius: 20px;
+  background: transparent; border: 1px solid var(--line); color: var(--muted);
+  transition: border-color .2s ease, color .2s ease, background .2s ease; }
+.filter-chip:hover { border-color: var(--accent); color: var(--text); }
+.filter-chip.on { background: var(--accent); border-color: var(--accent); color: #0B0B0D; }
+.filter-all { align-self: center; }
+.proj-filters .filter-group { position: relative; padding-left: 18px; }
+.proj-filters .filter-group::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 22px; background: var(--line); }
 
 /* ---------- Project blocks (projects.html) ---------- */
 /* Two columns; each block is a subgrid so the media, summary and facts

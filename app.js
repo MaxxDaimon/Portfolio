@@ -182,23 +182,86 @@ function sortedProjects(list) {
     .map((x) => x.p);
 }
 
+let activeFilter = null; // tag key currently filtering the projects page, or null = All
+
+// All distinct tag keys a project carries, across every type.
+function projectTagKeys(p) {
+  const out = [];
+  const t = p.tags || {};
+  Object.keys(TAG_TYPES).forEach((type) => {
+    const v = t[type];
+    if (!v) return;
+    (Array.isArray(v) ? v : [v]).forEach((k) => out.push(k));
+  });
+  return out;
+}
+
+// Distinct tag keys of one type used across all projects (in TAG_TYPES order).
+function usedKeysForType(type) {
+  const opts = TAG_TYPES[type].options;
+  const used = new Set();
+  PROJECTS.forEach((p) => {
+    const v = p.tags && p.tags[type];
+    if (!v) return;
+    (Array.isArray(v) ? v : [v]).forEach((k) => used.add(k));
+  });
+  return Object.keys(opts).filter((k) => used.has(k));
+}
+
+function renderFilters() {
+  const bar = $('#projectFilters');
+  if (!bar) return;
+
+  // Build one group per tag TYPE that mirrors the info card, but only when the
+  // type actually divides the work (≥2 of its options are used) — so a category
+  // where every project is unique (or all share one value) never clutters the bar.
+  const groups = Object.keys(TAG_TYPES).map((type) => {
+    const keys = usedKeysForType(type);
+    return { type, label: TAG_TYPES[type].label, keys };
+  }).filter((g) => g.keys.length >= 2);
+
+  if (!groups.length) { bar.innerHTML = ''; return; }
+
+  bar.innerHTML = `
+    <button class="filter-chip filter-all ${activeFilter === null ? 'on' : ''}" data-key="">All work</button>
+    ${groups.map((g) => `
+      <div class="filter-group">
+        <span class="filter-group-label">${g.label}</span>
+        <div class="filter-chips">
+          ${g.keys.map((k) =>
+            `<button class="filter-chip ${k === activeFilter ? 'on' : ''}" data-key="${k}">${TAG_TYPES[g.type].options[k]}</button>`
+          ).join('')}
+        </div>
+      </div>`).join('')}`;
+
+  bar.querySelectorAll('.filter-chip').forEach((b) =>
+    b.addEventListener('click', () => {
+      const k = b.dataset.key || null;
+      activeFilter = (k === activeFilter) ? null : k; // click active chip again = clear
+      renderFilters();
+      renderAllProjects();
+    }));
+}
+
 function renderAllProjects() {
   const root = $('#allProjects');
   if (!root) return; // not on the all-projects page
 
-  const ordered = sortedProjects(PROJECTS);
+  let ordered = sortedProjects(PROJECTS);
+  if (activeFilter) ordered = ordered.filter((p) => projectTagKeys(p).includes(activeFilter));
 
-  // Chronological numbering: oldest project = 01 (independent of display order).
+  // Chronological numbering: oldest project = 01 (independent of display order/filter).
   const byAge = [...PROJECTS].sort((a, b) => addedKey(a).localeCompare(addedKey(b)));
   const numberOf = new Map(byAge.map((p, i) => [p.slug, i + 1]));
 
   root.innerHTML = ordered.map((p) => projectBlockHTML(p, numberOf.get(p.slug))).join('');
 
   const count = $('#allProjectsCount');
-  if (count) count.textContent = String(ordered.length).padStart(3, '0') + ' PROJECTS LISTED';
+  if (count) count.textContent = String(ordered.length).padStart(3, '0')
+    + (activeFilter ? ' SHOWN' : ' PROJECTS LISTED');
 
   // If the URL has #slug, scroll that block into view below the fixed header.
-  if (location.hash) {
+  if (!activeFilter && location.hash) {
     const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (el) {
       requestAnimationFrame(() => {
@@ -329,6 +392,8 @@ function applyTheme() {
   r.setProperty('--line', m.line);
   r.setProperty('--header-bg', m.header);
   r.setProperty('--ticker', t.ticker + 's');
+  // Arcade mode keeps its neon accent regardless of the chosen theme.
+  if (typeof arcadeIsOn === 'function' && arcadeIsOn()) r.setProperty('--accent', ARCADE_GREEN);
 }
 
 function renderThemePanel() {
@@ -343,6 +408,15 @@ function renderThemePanel() {
     `<button class="mood ${name === t.mood ? 'on' : ''}" data-mood="${name}">${name}</button>`
   ).join('');
 
+  // The Arcade toggle only appears once the Konami code has been discovered.
+  const arcadeRow = arcadeUnlocked() ? `
+      <div class="tp-switchrow">
+        <span class="tp-label" style="margin:0">KONAMI MODE</span>
+        <button class="tp-toggle ${arcadeIsOn() ? 'on' : ''}" id="tpArcade" role="switch" aria-checked="${arcadeIsOn()}" aria-label="Konami mode">
+          <span class="tp-toggle-knob"></span>
+        </button>
+      </div>` : '';
+
   panel.innerHTML = `
     <div class="tp-head"><span>SITE THEME</span><button class="tp-close" aria-label="Close">×</button></div>
     <div class="tp-body">
@@ -350,8 +424,12 @@ function renderThemePanel() {
       <div class="tp-row">${swatches}</div>
       <div class="tp-label">BACKDROP</div>
       <div class="tp-row">${moods}</div>
+      ${arcadeRow}
       <button class="tp-reset">RESET TO DEFAULT</button>
     </div>`;
+
+  const arcadeBtn = panel.querySelector('#tpArcade');
+  if (arcadeBtn) arcadeBtn.addEventListener('click', () => setArcade(!arcadeIsOn(), false));
 
   panel.querySelectorAll('.swatch').forEach((b) =>
     b.addEventListener('click', () => {
@@ -372,6 +450,7 @@ function renderThemePanel() {
   panel.querySelector('.tp-close').addEventListener('click', closePanel);
   panel.querySelector('.tp-reset').addEventListener('click', () => {
     pulseThemeAnim();
+    if (arcadeIsOn()) setArcade(false, false); // reset also exits Konami mode
     ['mw_accent', 'mw_mood', 'mw_ticker'].forEach(store.del); applyTheme(); renderThemePanel();
   });
 }
@@ -636,11 +715,165 @@ function flashCopied(a) {
 }
 
 
+/* ---------- Konami code easter egg (Arcade Mode) ---------- */
+// ↑ ↑ ↓ ↓ ← → ← → B A  →  toggles a CRT "arcade" theme. Persists across pages
+// via localStorage; Esc (or entering the code again) exits.
+const ARCADE_GREEN = '#39FF14';
+
+function arcadeIsOn() { return document.documentElement.classList.contains('arcade'); }
+function arcadeUnlocked() { return store.get('mw_arcade_unlocked') === '1'; }
+
+function setArcade(on, announce) {
+  store.set('mw_arcade', on ? '1' : '0');
+
+  if (on) {
+    ensurePixelFont();
+    powerOnReveal(); // wipes the theme in behind a downward sweep, then commits
+  } else {
+    document.documentElement.classList.remove('arcade');
+    if (typeof applyTheme === 'function') applyTheme();
+  }
+
+  if (announce) arcadeToast(on
+    ? ['KONAMI MODE UNLOCKED', 'PRESS ESC TO EXIT']
+    : ['KONAMI MODE OFF', '']);
+  // Keep the THEME panel's toggle in sync if it's open (reflect the target state).
+  if (typeof renderThemePanel === 'function' && !document.getElementById('themePanel').hidden) {
+    renderThemePanel();
+  }
+}
+
+// Actually apply the arcade theme (class + neon accent) and sync the panel.
+function commitArcade() {
+  document.documentElement.classList.add('arcade');
+  document.documentElement.style.setProperty('--accent', ARCADE_GREEN);
+  if (typeof renderThemePanel === 'function' && !document.getElementById('themePanel').hidden) {
+    renderThemePanel();
+  }
+}
+
+// Load the arcade display font once, only when the mode is first used.
+function ensurePixelFont() {
+  if (document.getElementById('mw-pixel-font')) return;
+  const l = document.createElement('link');
+  l.id = 'mw-pixel-font';
+  l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+  document.head.appendChild(l);
+}
+
+// CRT power-on. A green scanline overlay wipes in from top to bottom (clip-path)
+// led by a bright sweep bar, and the real theme is committed just as the sweep
+// nears the bottom — so nothing arcade appears ahead of the bar. Reduced-motion
+// users skip the animation and get the theme instantly.
+function powerOnReveal() {
+  const reveal = document.createElement('div');
+  reveal.className = 'crt-reveal';
+  const bar = document.createElement('div');
+  bar.className = 'crt-poweron';
+  document.body.appendChild(reveal);
+  document.body.appendChild(bar);
+
+  // Commit the real theme while the sweep is near the bottom and the overlay
+  // still covers the page, so the swap is hidden under the green wash.
+  setTimeout(commitArcade, 600);
+  setTimeout(() => { reveal.remove(); bar.remove(); }, 780);
+}
+
+function arcadeToast(lines) {
+  const prev = document.querySelector('.arcade-toast');
+  if (prev) prev.remove();
+  const t = document.createElement('div');
+  t.className = 'arcade-toast';
+  t.innerHTML = lines[0] + (lines[1] ? `<span class="sub">${lines[1]}</span>` : '');
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 400);
+  }, 2600);
+}
+
+function initKonami() {
+  const SEQ = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown',
+               'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+  let pos = 0;
+
+  // Re-apply a previously unlocked arcade state on load (no toast/animation).
+  if (store.get('mw_arcade') === '1') {
+    document.documentElement.classList.add('arcade');
+    document.documentElement.style.setProperty('--accent', ARCADE_GREEN);
+    ensurePixelFont();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const key = (e.key || '').toLowerCase();
+
+    // Esc exits arcade if it's on.
+    if (key === 'escape' && arcadeIsOn()) {
+      setArcade(false, true);
+      pos = 0;
+      return;
+    }
+
+    // Ignore typing in inputs/textareas.
+    const tag = (e.target && e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (key === SEQ[pos]) {
+      pos++;
+      if (pos === SEQ.length) {
+        pos = 0;
+        store.set('mw_arcade_unlocked', '1'); // permanently reveal the panel toggle
+        setArcade(!arcadeIsOn(), true);
+      }
+    } else {
+      // Allow a mistaken key to still start a fresh match if it equals SEQ[0].
+      pos = (key === SEQ[0]) ? 1 : 0;
+    }
+  });
+}
+
+
+/* ---------- Page transitions ---------- */
+// The quick fade-IN is handled by a tiny inline <head> script on each page (so
+// it works even before app.js loads). There is intentionally no fade-OUT —
+// clicking a link navigates instantly, avoiding any fade-to-black between pages.
+//
+// Prefetch-on-intent: when the cursor touches (or a finger taps toward) an
+// internal link, fetch that page in the background so it's cached and loads
+// near-instantly on click. This is what makes navigation feel premium — the
+// next page is already in memory before the click completes.
+function initPrefetch() {
+  const done = new Set();
+  const prefetch = (href) => {
+    if (!href || done.has(href)) return;
+    if (/^https?:\/\//i.test(href) || href.startsWith('#') ||
+        href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    done.add(href);
+    const l = document.createElement('link');
+    l.rel = 'prefetch';
+    l.href = href;
+    document.head.appendChild(l);
+  };
+  document.querySelectorAll('.nav a, a.btn, a.card, .featured').forEach((a) => {
+    const href = a.getAttribute && a.getAttribute('href');
+    if (!href) return;
+    let hovered = false;
+    const trigger = () => { if (!hovered) { hovered = true; prefetch(href); } };
+    a.addEventListener('mouseenter', trigger);
+    a.addEventListener('touchstart', trigger, { passive: true });
+    a.addEventListener('focus', trigger);
+  });
+}
+
+
 /* ---------- Boot ---------- */
 
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   renderProjects();
+  renderFilters();
   renderAllProjects();
   renderArticles();
   renderHero();
@@ -649,6 +882,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initNavActive();
   initCopyEmail();
+  initKonami();
+  initPrefetch();
 
   // Mobile nav toggle
   const navToggle = $('#navToggle');
@@ -668,9 +903,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       $('#themePanel').hidden ? openPanel() : closePanel();
     });
+    // Close on outside-click. Uses the CAPTURE phase so it evaluates before the
+    // swatch/mood handlers rebuild the panel's innerHTML — otherwise the clicked
+    // element would already be detached and every in-panel click would close it.
     document.addEventListener('click', (e) => {
       const panel = $('#themePanel');
       if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) closePanel();
-    });
+    }, true);
   }
 });
