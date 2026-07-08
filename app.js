@@ -339,13 +339,50 @@ function renderThemePanel() {
     </div>`;
 
   panel.querySelectorAll('.swatch').forEach((b) =>
-    b.addEventListener('click', () => { store.set('mw_accent', b.dataset.accent); applyTheme(); renderThemePanel(); }));
+    b.addEventListener('click', () => {
+      const pr = panel.getBoundingClientRect();
+      const or = b.getBoundingClientRect();
+      const x = or.left - pr.left + or.width / 2;
+      const y = or.top - pr.top + or.height / 2;
+      const color = b.dataset.accent;
+      pulseThemeAnim();
+      store.set('mw_accent', color); applyTheme(); renderThemePanel();
+      spawnRipple(panel, x, y, color);
+    }));
   panel.querySelectorAll('.mood').forEach((b) =>
-    b.addEventListener('click', () => { store.set('mw_mood', b.dataset.mood); applyTheme(); renderThemePanel(); }));
+    b.addEventListener('click', () => {
+      pulseThemeAnim();
+      store.set('mw_mood', b.dataset.mood); applyTheme(); renderThemePanel();
+    }));
   panel.querySelector('.tp-close').addEventListener('click', closePanel);
   panel.querySelector('.tp-reset').addEventListener('click', () => {
+    pulseThemeAnim();
     ['mw_accent', 'mw_mood', 'mw_ticker'].forEach(store.del); applyTheme(); renderThemePanel();
   });
+}
+
+// Briefly enable a global colour transition so the new theme eases in.
+let _themeAnimTimer = null;
+function pulseThemeAnim() {
+  const el = document.documentElement;
+  el.classList.add('theme-anim');
+  clearTimeout(_themeAnimTimer);
+  _themeAnimTimer = setTimeout(() => el.classList.remove('theme-anim'), 550);
+}
+
+// A soft wash of the chosen accent radiating from the clicked swatch.
+// Called AFTER the panel re-renders (its innerHTML is rebuilt), so it appends
+// to the surviving panel element using coordinates captured before the render.
+function spawnRipple(panel, x, y, color) {
+  if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  const rip = document.createElement('span');
+  rip.className = 'tp-ripple';
+  rip.style.left = x + 'px';
+  rip.style.top = y + 'px';
+  rip.style.width = rip.style.height = '80px';
+  rip.style.background = color;
+  panel.appendChild(rip);
+  rip.addEventListener('animationend', () => rip.remove());
 }
 
 function openPanel()  { renderThemePanel(); $('#themePanel').hidden = false; }

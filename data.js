@@ -180,7 +180,7 @@ const PROJECTS = [
     showOnHome:  false,
     description: 'A short, action packed co-op rafting game.',
     tags:        { team: 'gamejam', engine: 'unreal', focus: [] },
-    poster:      'assets/adrift-poster.png',
+    poster:      'assets/adrift-poster.jpg',
     video:       'assets/adrift-video.mp4',
     link:        'https://twenmod.itch.io/adrift',
 
@@ -206,7 +206,7 @@ const PROJECTS = [
     showOnHome:  true,
     description: 'A physics based deck building tower stacker.',
     tags:        { team: 'gamejam', engine: 'unity', focus: [] },
-    poster:      'assets/tabletoptumble-poster.png',
+    poster:      'assets/tabletoptumble-poster.jpg',
     video:       'assets/tabletoptumble-video.mp4',
     link:        'https://twenmod.itch.io/tabletop-tumble',
 
