@@ -1,216 +1,163 @@
-# Portfolio — Editing Guide
+# Portfolio Editing Guide
 
-A hand-editable static website: plain HTML, CSS and JavaScript. No build step,
-no framework, nothing to install. Files can be edited in any text editor or
-directly on GitHub.
+A static website built with plain HTML, CSS and JavaScript. No build step and
+nothing to install. Edit the files in any text editor or directly on GitHub.
 
----
+Almost everything you will want to change lives in `data.js`.
 
 ## Files
 
 ```
-index.html     Home page (hero, projects preview, about preview, contact)
-projects.html  Every project as a full expanded block
-about.html     About page (intro, skills & tools, experience)
-articles.html  Articles / write-ups (data-driven; shows a placeholder when empty)
-styleguide.html  Visual reference for the design system (not in the nav)
-404.html       Shown for broken links
-data.js        ALL content that changes: projects, tags, articles, ticker, theme
-app.js         The engine that renders data.js. Normally left alone
-styles.css     All styling. Default colors live at the top under :root
-assets/        All images, video and documents — organized into subfolders:
-  projects/posters/   project poster images (*-poster.jpg)
-  projects/videos/    project gameplay clips (*.mp4)
-  articles/           images for article posts (add as needed)
-  portraits/          about-page portrait photos
-  hero/               hero background poster + optional hero.mp4
-  brand/              favicon + touch icons
-  documents/          resume.pdf
+index.html       Home page (hero, projects preview, about preview, contact)
+projects.html    Every project as a full block
+about.html       About page (intro, skills, experience)
+articles.html    Articles, built from data.js (shows a placeholder when empty)
+styleguide.html  Visual reference for the design system (not linked in the nav)
+404.html         Shown for broken links
+data.js          The content you edit: projects, tags, articles, ticker, theme
+app.js           The engine that renders data.js. Leave this alone
+styles.css       All styling. Default colors are the :root variables at the top
+assets/          Images, video and documents (see subfolders below)
 ```
 
-When adding a file, drop it in the matching subfolder and reference it with the
-full path, e.g. `assets/projects/posters/game-name.jpg`.
+Asset subfolders:
 
-Almost all content editing happens in **`data.js`**. A small file count is
-normal for a site like this.
+```
+assets/projects/posters/   project poster images
+assets/projects/videos/    project gameplay clips (.mp4)
+assets/articles/           images for articles
+assets/portraits/          about-page portrait photos
+assets/hero/               hero background poster and optional hero.mp4
+assets/brand/              favicon and touch icons
+assets/documents/          resume.pdf
+```
 
----
+When you add a file, put it in the matching subfolder and reference it by its
+full path, for example `assets/projects/posters/game-name.jpg`.
 
-## How the pages fit together
+## Add or edit a project
 
-- `index.html` is the landing page. Its Projects section shows a chosen few
-  projects; its About section is a short intro with a link to the full about page.
-- `projects.html` lists **every** project as a full block (media, description,
-  facts panel, responsibilities, accolades). Home cards deep-link to the matching
-  block here.
-- `about.html` holds the full intro, the skills lists, and the experience timeline.
-- `articles.html` is built from the `ARTICLES` list in `data.js`. While that list
-  is empty it shows an "under construction" note.
-- Every page loads `data.js` (content) and `app.js` (engine) and shares the same
-  header, theme system and footer.
-
----
-
-## Projects
-
-### Add or edit a project
-
-In `data.js`, copy any `{ ... }` block inside `PROJECTS`, paste it, and edit the
-values:
+In `data.js`, copy any block inside `PROJECTS`, paste it, and change the values:
 
 ```js
 {
-  slug:        'game-name',            // unique id; home cards link to projects.html#game-name
+  slug:        'game-name',      // unique id. Home cards link to projects.html#game-name
   title:       'Game Name',
-  featured:    false,                  // true = big banner, false = grid card
-  showOnHome:  true,                   // true = appears on the home page
-  description: 'One or two sentences, shown on the card and the project block.',
+  featured:    false,            // true = large banner, false = grid card
+  showOnHome:  true,             // true = appears on the home page
+  description: 'One or two sentences, shown on the card and the block.',
   tags:        { team: 'solo', engine: 'unity', focus: ['systems'] },
-  poster:      'assets/projects/posters/game-name.jpg', // still image
-  video:       '',                     // '' = image only; else 'assets/projects/videos/game-name.mp4'
-  link:        '',                     // itch.io / external URL — adds a VISIT button
+  poster:      'assets/projects/posters/game-name.jpg',
+  video:       '',               // empty = image only, else assets/projects/videos/game-name.mp4
+  link:        '',               // itch.io or external URL. Adds a VISIT button
 
-  // Expanded-block content (all optional — leave empty to skip that part)
+  // All fields below are optional. Leave a field empty to skip it.
   summary:          'Short intro paragraph.',
   role:             'Technical Game Designer',
-  added:            '2026-06',         // 'YYYY' or 'YYYY-MM' — controls ordering (newest first)
-  timeframe:        '8 weeks · 2026',
+  added:            '2026-06',    // 'YYYY' or 'YYYY-MM'. Controls ordering
+  timeframe:        '8 weeks, 2026',
   teamSize:         '12 developers',
   genre:            'Action-Adventure',
   platforms:        ['Itch.io', 'Windows'],
-  awards:           ['Some Jam — Placed 1st'],
-  responsibilities: ['What was done…', 'And more…'],
+  awards:           ['Some Jam, placed 1st'],
+  responsibilities: ['What you did', 'And more'],
 },
 ```
 
-Remove a project by deleting its block. Each `slug` must be unique — it is the
-anchor the home cards link to.
+Delete a block to remove that project. Every `slug` must be unique.
 
-### Ordering
+The projects page sorts itself: featured projects first, then newest first.
+"Newest" uses `added`, and falls back to the year in `timeframe`.
 
-The projects page orders itself automatically: **featured first, then newest
-first**. "Newest" uses `added` (falling back to the year in `timeframe`).
+Two switches control where a project appears:
 
-### Featured vs. regular, and what shows on the home page
+- `featured`: `true` shows it as the wide banner, `false` as a grid card.
+- `showOnHome`: `true` shows it on the home page, `false` hides it there. It
+  always appears on the projects page.
 
-Two independent switches per project:
+For a home layout of one banner plus two cards, give one project
+`featured: true` and `showOnHome: true`, give two projects `featured: false` and
+`showOnHome: true`, and set `showOnHome: false` on the rest.
 
-- **`featured`** — `true` shows it large as the wide 16:9 banner; `false` shows
-  it as a grid card.
-- **`showOnHome`** — `true` includes it in the home page's Projects section;
-  `false` hides it there (it still appears on the projects page).
+## Tags and filters
 
-For the "1 featured + 2 smaller" home layout: one project gets
-`featured: true, showOnHome: true`, two get `featured: false, showOnHome: true`,
-and the rest get `showOnHome: false`. The projects page always lists everything.
+Tags live in `data.js` under `TAG_TYPES`, grouped into types. Each type sets how
+many tags a project may carry:
 
----
+- `multiple: false` means pick one (for example Engine: Unreal or Unity).
+- `multiple: true` means pick any number (for example Focus).
 
-## Tags
-
-Tags live in `data.js` under `TAG_TYPES`, grouped into **types**. Each type sets
-how many tags of that type one project may carry:
-
-- `multiple: false` → pick **one** (e.g. **Engine**: Unreal *or* Unity).
-- `multiple: true`  → pick **any number** (e.g. **Focus**).
-
-Add an option by adding a line inside a type's `options`; add a whole type by
-copying a type block. In each option the left side is the short key a project
-uses, the right side is the on-screen label. A project sets its tags per type:
+In each option the left side is the short key a project uses and the right side
+is the label shown on screen. A project sets its tags per type:
 
 ```js
-tags: { team: 'team', engine: 'unreal', focus: ['systems', 'combat'] }
+tags: { team: 'medium', engine: 'unreal', focus: ['threeCs', 'combat'] }
 ```
 
-Tags are currently kept in the data but not shown on the cards — the system is
-ready if they are ever wanted back.
-
----
+The projects page shows filter chips grouped by type. A type only appears as a
+filter once at least two of its options are used across your projects.
 
 ## Articles
 
-Blog posts / write-ups live in the `ARTICLES` list in `data.js`. An empty list
-shows the "under construction" placeholder on `articles.html`. Add a post block:
+Articles live in the `ARTICLES` list in `data.js`. While the list is empty the
+articles page shows an under-construction note. Add a post:
 
 ```js
 {
-  title:   'What I learned tuning ZIMA\u2019s camera',
-  date:    '2026-07',            // 'YYYY' or 'YYYY-MM' — newest first, automatically
+  title:   'What I learned tuning a camera system',
+  date:    '2026-07',        // 'YYYY' or 'YYYY-MM'. Newest first
   summary: 'One or two sentences shown on the card.',
-  link:    'https://…',          // '' = no link yet
-  tag:     'Design',             // optional small label
+  link:    'https://...',    // empty = no link yet
+  tag:     'Design',         // optional label
 },
 ```
 
----
-
 ## About page
 
-The intro paragraphs, skills lists and experience timeline are plain HTML in
-`about.html`, each under a labelled comment:
+The intro, skills and experience are plain HTML in `about.html`, each under a
+labelled comment.
 
-- **Skills** — three columns (Software / Design / Professional). Software uses
-  labelled sub-groups; the other two are bullet lists. Add or remove `<li>` items.
-- **Experience** — `<div class="exp-row">…</div>` blocks. Copy one to add an
-  entry, edit the text, or delete a block to remove it.
+- Skills: three columns (Software, Design, Professional). Add or remove `<li>`
+  items.
+- Experience: copy a `<div class="exp-row">` block to add an entry, or delete one
+  to remove it.
 
-The short about intro also appears on the home page (`index.html`) — update both
-if the wording changes.
-
----
+The short intro also appears on the home page. Update both if you change it.
 
 ## Portrait
 
-The About portrait is a small carousel. Its image set is the `PORTRAITS` list at
-the top of the carousel section in `app.js`. Add or remove `assets/portraits/…`
-paths to change the photos; the first one is the default. It auto-advances slowly
-and pauses on hover. Portraits are square (1:1).
-
----
-
-## Images and video
-
-Every image uses `object-fit: cover`, so it fills its frame and crops the
-overflow — matching the **aspect ratio** matters, exact pixels are flexible.
-Keep files reasonably small for fast loading.
-
-| Where | Aspect ratio | Recommended size |
-|---|---|---|
-| Hero background | 16:9 | 2560 × 1440 |
-| Featured / grid / project media | 16:9 | up to 2560 × 1440 |
-| Portrait photos | 1:1 (square) | 1000 × 1000 |
-
-- A project shows its `poster` until a `video` is supplied, then the `.mp4`
-  plays muted and looping over it. Videos follow the same 16:9 ratio.
-- GitHub rejects single files over 100 MB, so clips should be short and
-  compressed.
-- The hero fills the whole screen; keep the important part centered as the edges
-  crop on different screen shapes.
-
----
+The about portrait is a small carousel. Its images are the `PORTRAITS` list at
+the top of the carousel section in `app.js`. Add or remove `assets/portraits/...`
+paths to change them. The first one is the default. Portraits are square.
 
 ## Resume
 
-The RESUME button opens `assets/documents/resume.pdf`. Dropping a file with that
-exact name into `assets/documents/` makes the button work.
-
----
+The RESUME button opens `assets/documents/resume.pdf`. Put a file with that exact
+name in that folder to make the button work.
 
 ## Theme
 
-Default colors are the `:root` variables at the top of `styles.css` (`--accent`,
-`--bg`, …). Visitors can also pick their own via the THEME button; the accent and
-backdrop options offered there are `ACCENTS` and `MOODS` in `data.js` (the first
-accent is the default).
+Default colors are the `:root` variables at the top of `styles.css`. Visitors can
+pick their own accent and backdrop through the THEME button. Those options are
+the `ACCENTS` and `MOODS` lists in `data.js`, and the first accent is the default.
 
----
+## Images and video
 
-## Other details
+Images use `object-fit: cover`, so they fill their frame and crop the overflow.
+Match the aspect ratio and the exact pixel size is flexible.
 
-- **Ticker** — the scrolling words under the hero are the `TICKER_WORDS` list in
-  `data.js`.
-- **Scroll reveal** — sections fade and rise in on scroll. This is disabled
-  automatically for visitors whose device has "reduce motion" enabled.
-- **Social share** — each page's `<head>` has Open Graph / Twitter tags for link
-  previews. Once the site has a real domain, the `og:image` / `twitter:image`
-  paths should be changed to the full `https://…` address so previews resolve.
+```
+Hero background                 16:9   2560 x 1440
+Project posters and cards       16:9   up to 2560 x 1440
+Portrait photos                 1:1    1000 x 1000
+```
+
+A project shows its poster until you add a `video`, then the `.mp4` plays muted
+and looping over it. Keep clips short and compressed, since GitHub rejects files
+over 100 MB.
+
+## When the site gets a domain
+
+In each page's `<head>`, change the `og:image` and `twitter:image` paths to the
+full `https://...` address so link previews resolve. The `sitemap.xml` and
+`robots.txt` URLs should be updated to the new domain too.

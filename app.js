@@ -1,8 +1,8 @@
 /* ============================================================
    PORTFOLIO — ENGINE
    ------------------------------------------------------------
-   Renders whatever is in data.js. Shared by both pages:
-   index.html (home) and project.html (a single project).
+   Renders whatever is in data.js. Shared across pages:
+   index.html (home) and projects.html (all projects).
    This file does not normally need editing.
    ============================================================ */
 
@@ -10,18 +10,6 @@ const $ = (sel) => document.querySelector(sel);
 
 
 /* ---------- Tags ---------- */
-
-// All tag labels for a project, in TAG_TYPES order.
-function tagLabels(tags) {
-  const out = [];
-  for (const type in TAG_TYPES) {
-    const val = tags && tags[type];
-    if (!val) continue;
-    const opts = TAG_TYPES[type].options;
-    (Array.isArray(val) ? val : [val]).forEach((k) => out.push(opts[k] || k));
-  }
-  return out;
-}
 
 // The label for one specific type (first value if it's a list).
 function typeLabel(tags, type) {
@@ -31,21 +19,12 @@ function typeLabel(tags, type) {
   return (TAG_TYPES[type].options[k]) || '';
 }
 
-function tagChips(tags, cls) {
-  return tagLabels(tags).map((label) => `<span class="${cls}">${label}</span>`).join('');
-}
-
 
 /* ---------- Media + links ---------- */
 
 function media(project) {
   const source = project.video ? `<source src="${project.video}" type="video/mp4">` : '';
   return `<video autoplay muted loop playsinline preload="none" poster="${project.poster}">${source}</video>`;
-}
-
-// Where a project's external link points (used for the block button).
-function projectLink(p) {
-  return p.link || '';
 }
 
 // Home cards scroll to the project's block on the projects page.
@@ -732,7 +711,7 @@ function flashCopied(a) {
 /* ---------- Konami code easter egg (Arcade Mode) ---------- */
 // ↑ ↑ ↓ ↓ ← → ← → B A  →  toggles a CRT "arcade" theme. Persists across pages
 // via localStorage; Esc (or entering the code again) exits.
-const ARCADE_GREEN = '#E60012'; // KONAMI RED (variable name kept for simplicity)
+const ARCADE_GREEN = '#BF0021'; // KONAMI RED (variable name kept for simplicity)
 
 function arcadeIsOn() { return document.documentElement.classList.contains('arcade'); }
 function arcadeUnlocked() { return store.get('mw_arcade_unlocked') === '1'; }
@@ -747,6 +726,7 @@ function setArcade(on, announce) {
     document.documentElement.classList.remove('arcade');
     if (typeof applyTheme === 'function') applyTheme();
     setFavicon(false);
+    refreshKonamiHint();
   }
 
   if (announce) arcadeToast(on
@@ -779,6 +759,7 @@ function commitArcade() {
   document.documentElement.style.setProperty('--accent', ARCADE_GREEN);
   setFavicon(true);
   syncArcadeToggle();
+  refreshKonamiHint();
 }
 
 // Load the arcade display font once, only when the mode is first used.
@@ -787,7 +768,7 @@ function ensurePixelFont() {
   const l = document.createElement('link');
   l.id = 'mw-pixel-font';
   l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+  l.href = 'https://fonts.googleapis.com/css2?family=Marcellus&display=swap';
   document.head.appendChild(l);
 }
 
@@ -851,17 +832,80 @@ function initKonami() {
     if (tag === 'input' || tag === 'textarea') return;
 
     if (key === SEQ[pos]) {
+      // Stop arrow keys from scrolling the page while the code is being entered.
+      if (key.indexOf('arrow') === 0) e.preventDefault();
       pos++;
+      konamiProgress(pos);
       if (pos === SEQ.length) {
         pos = 0;
+        konamiLit = 0; // clear progress so symbols are unlit if mode is later turned off
+        const firstUnlock = !arcadeUnlocked();
         store.set('mw_arcade_unlocked', '1'); // permanently reveal the panel toggle
         setArcade(!arcadeIsOn(), true);
+        if (firstUnlock) showThemeUnlockHint();
       }
     } else {
-      // Allow a mistaken key to still start a fresh match if it equals SEQ[0].
-      pos = (key === SEQ[0]) ? 1 : 0;
+      // Wrong key. If a sequence was in progress, wiggle to signal the mistake
+      // and reset fully — no instant restart, even if the key was the first one.
+      if (key.indexOf('arrow') === 0 && pos > 0) e.preventDefault();
+      if (pos > 0) konamiWrong();
+      pos = 0;
+      konamiProgress(0);
     }
   });
+}
+
+// Lights up the first `step` symbols of the footer hint as the code is entered.
+// Skipped while a hint is mid-hover-glitch or Konami mode is already active.
+function konamiProgress(step) {
+  konamiLit = step;
+  document.querySelectorAll('.konami-hint').forEach((hint) => {
+    if (hint._glitching || arcadeIsOn()) return;
+    hint.classList.toggle('entering', step > 0);
+    hint.innerHTML = konamiKeysHTML(step);
+  });
+}
+
+// Brief shake on the footer hint when a wrong key breaks an in-progress code.
+function konamiWrong() {
+  document.querySelectorAll('.konami-hint').forEach((hint) => {
+    if (hint._glitching || arcadeIsOn()) return;
+    hint.classList.remove('wrong');
+    void hint.offsetWidth; // reflow so the animation can replay
+    hint.classList.add('wrong');
+    setTimeout(() => hint.classList.remove('wrong'), 420);
+  });
+}
+
+// One-time pointer that pops up beneath the THEME button on first Konami unlock,
+// nudging the visitor toward the newly-revealed setting.
+function showThemeUnlockHint() {
+  const btn = document.getElementById('themeBtn');
+  if (!btn) return;
+
+  const hint = document.createElement('div');
+  hint.className = 'unlock-hint';
+  hint.innerHTML = '<span class="unlock-arrow">&uarr;</span>New setting unlocked!';
+  document.body.appendChild(hint);
+
+  const place = () => {
+    const r = btn.getBoundingClientRect();
+    hint.style.top = (r.bottom + 12) + 'px';
+    // Right-align to the button so it sits under it, clamped to the viewport.
+    hint.style.right = Math.max(12, window.innerWidth - r.right) + 'px';
+  };
+  place();
+  requestAnimationFrame(() => hint.classList.add('show'));
+
+  const dismiss = () => {
+    hint.classList.remove('show');
+    setTimeout(() => hint.remove(), 400);
+    window.removeEventListener('resize', place);
+    btn.removeEventListener('click', dismiss);
+  };
+  window.addEventListener('resize', place);
+  btn.addEventListener('click', dismiss);
+  setTimeout(dismiss, 6000); // auto-dismiss
 }
 
 
@@ -921,18 +965,44 @@ function animateCount(el, target, label) {
 }
 
 
-/* ---------- Konami footer hint: glitch spell-out ---------- */
-// Hovering the footer code for a beat runs a glitch scramble that resolves into
-// "Worth a try ? ? ?"; leaving scrambles back to the arrow symbols.
+/* ---------- Konami footer hint ---------- */
+// The footer hint has three states:
+//   • locked, idle  → the code symbols, dim (each in its own .kh-key span)
+//   • being entered → the first N symbols light up as keys are pressed
+//   • Konami active → reads "KONAMI MODE // ACTIVE"
+// Hovering while locked runs a glitch scramble to "Worth a try ? ? ?".
+const KONAMI_SYMBOLS = ['↑', '↑', '↓', '↓', '←', '→', '←', '→', 'B', 'A'];
+const KONAMI_SYMBOL_TEXT = KONAMI_SYMBOLS.join(' ');
+const KONAMI_ACTIVE_TEXT = 'KONAMI MODE // ACTIVE';
+let konamiLit = 0; // how many symbols are currently highlighted (persists through hover)
+
+function konamiKeysHTML(litCount) {
+  const n = litCount || 0;
+  return KONAMI_SYMBOLS.map((s, i) => {
+    const isLetter = /[a-z]/i.test(s);
+    const isHoriz = (s === '←' || s === '→');
+    const cls = isLetter ? 'kh-letter' : (isHoriz ? 'kh-arrow kh-horiz' : 'kh-arrow');
+    return `<span class="kh-key ${cls}${i < n ? ' lit' : ''}">${s}</span>`;
+  }).join(' ');
+}
+
+// Reset each footer hint to its resting state (key symbols when locked/off,
+// the active label when Konami mode is on), unless it's mid-hover-glitch.
+function refreshKonamiHint() {
+  document.querySelectorAll('.konami-hint').forEach((hint) => {
+    if (hint._glitching) return;
+    if (arcadeIsOn()) { hint.classList.remove('entering'); hint.textContent = KONAMI_ACTIVE_TEXT; }
+    else { hint.classList.toggle('entering', konamiLit > 0); hint.innerHTML = konamiKeysHTML(konamiLit); }
+  });
+}
+
 function initKonamiHint() {
-  const TARGET = 'Worth a try ? ? ?';
   const GLITCH = '!<>-_\\/[]{}=+*^?#§±%&';
   document.querySelectorAll('.konami-hint').forEach((hint) => {
     hint.removeAttribute('title');
-    const original = hint.textContent;
     let hold = null, raf = null;
 
-    function scramble(toText) {
+    function scramble(toText, onDone) {
       clearInterval(raf);
       const from = hint.textContent;
       const len = Math.max(from.length, toText.length);
@@ -957,14 +1027,23 @@ function initKonamiHint() {
           } else { out += s.fromC; }
         }
         hint.innerHTML = out;
-        if (done >= q.length) clearInterval(raf);
+        if (done >= q.length) { clearInterval(raf); if (onDone) onDone(); }
         f++;
       }, 28);
     }
 
-    hint.addEventListener('mouseenter', () => { hold = setTimeout(() => scramble(TARGET), 280); });
-    hint.addEventListener('mouseleave', () => { clearTimeout(hold); scramble(original); });
+    hint.addEventListener('mouseenter', () => {
+      if (arcadeIsOn()) return; // when active it just reads the status — no glitch
+      hold = setTimeout(() => { hint._glitching = true; scramble('Worth a try ? ? ?'); }, 280);
+    });
+    hint.addEventListener('mouseleave', () => {
+      clearTimeout(hold);
+      if (!hint._glitching) return;
+      scramble(KONAMI_SYMBOL_TEXT, () => { hint._glitching = false; refreshKonamiHint(); });
+    });
   });
+
+  refreshKonamiHint(); // initial render
 }
 
 

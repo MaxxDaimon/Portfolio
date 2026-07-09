@@ -155,11 +155,11 @@ a { color: inherit; }
 .tp-toggle { position: relative; width: 48px; height: 28px; flex-shrink: 0; padding: 0; cursor: pointer;
   border-radius: 999px; border: 1px solid var(--line); background: var(--surface2);
   transition: background .25s ease, border-color .2s ease, box-shadow .2s ease; }
-.tp-toggle:hover { border-color: #E60012; box-shadow: 0 0 0 3px rgba(230,0,18,.18); }
+.tp-toggle:hover { border-color: #BF0021; box-shadow: 0 0 0 3px rgba(191,0,33,.18); }
 .tp-toggle-knob { position: absolute; top: 50%; left: 3px; width: 20px; height: 20px; border-radius: 50%;
   transform: translateY(-50%); background: var(--muted);
   transition: transform .26s cubic-bezier(.34,1.45,.5,1), background .25s ease; }
-.tp-toggle.on { background: #E60012; border-color: #E60012; }
+.tp-toggle.on { background: #BF0021; border-color: #BF0021; }
 .tp-toggle.on .tp-toggle-knob { transform: translateY(-50%) translateX(20px); background: #fff; }
 
 /* ---------- Hero ---------- */
@@ -324,9 +324,9 @@ a.article-card:hover { border-color: var(--accent); transform: translateY(-2px);
 /* ---------- Arcade Mode (Konami easter egg) ---------- */
 /* Toggled by the ↑↑↓↓←→←→ B A sequence; class lives on <html>. */
 html.arcade {
-  --accent: #E60012;   /* KONAMI RED takes over every accent */
+  --accent: #BF0021;   /* KONAMI RED takes over every accent */
 }
-/* CRT scanlines + faint vignette, drawn above content but click-through */
+/* CRT scanlines + vignette, drawn above content but click-through */
 html.arcade body::after {
   content: '';
   position: fixed;
@@ -334,51 +334,57 @@ html.arcade body::after {
   z-index: 300;
   pointer-events: none;
   background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0px, rgba(0,0,0,.16) 1px, transparent 2px, transparent 3px),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%);
+    repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0px, rgba(0,0,0,.28) 1px, transparent 2px, transparent 4px),
+    repeating-linear-gradient(90deg, rgba(255,0,40,.04) 0px, rgba(0,40,255,.04) 2px, transparent 3px),
+    radial-gradient(ellipse 120% 120% at center, transparent 48%, rgba(0,0,0,.55) 100%);
   mix-blend-mode: multiply;
 }
+/* Curvature/bloom layer + a slow rolling scan band */
 html.arcade body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 301;
   pointer-events: none;
-  box-shadow: inset 0 0 120px rgba(230,0,18,.12);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.5), inset 0 0 140px rgba(191,0,33,.18);
+  background: linear-gradient(rgba(255,255,255,.04), rgba(255,255,255,0) 6%);
+  background-size: 100% 14px;
 }
 @media (prefers-reduced-motion: no-preference) {
   html.arcade body::after { animation: crt-flicker 5s steps(60) infinite; }
+  html.arcade body::before { animation: crt-roll 8s linear infinite; }
 }
-@keyframes crt-flicker { 0%,100% { opacity: 1; } 50% { opacity: .94; } 97% { opacity: .88; } }
+@keyframes crt-flicker { 0%,100% { opacity: 1; } 50% { opacity: .93; } 97% { opacity: .86; } }
+@keyframes crt-roll { from { background-position: 0 0; } to { background-position: 0 100vh; } }
 
-/* Pixel/arcade typography — applied to display + label text while active.
-   Press Start 2P renders large for its point size, so the big headings get
-   reduced sizes and roomier line-height to stay readable and not overflow. */
+/* Konami display typography — an elegant, flared humanist face (Marcellus, the
+   closest free stand-in for Konami's Optima Pro Bold wordmark) applied to the
+   large display text while the mode is active. Small mono labels keep JetBrains
+   Mono for legibility. Normal site sizes are kept — no size hacks needed. */
 html.arcade .hero-title,
 html.arcade .page-title,
 html.arcade .contact-title,
 html.arcade .proj-title,
 html.arcade .skill-head,
 html.arcade .featured h3,
-html.arcade .eyebrow,
-html.arcade .kicker,
-html.arcade .nav,
-html.arcade .btn,
-html.arcade .tag,
-html.arcade .ticker {
-  font-family: 'Press Start 2P', 'JetBrains Mono', monospace;
+html.arcade .brand {
+  font-family: 'Marcellus', 'Archivo', serif;
+  letter-spacing: .01em;
 }
-html.arcade .hero-title { font-size: clamp(18px, 2.6vw, 34px); line-height: 1.6; letter-spacing: 0; }
-html.arcade .page-title { font-size: clamp(24px, 4vw, 44px); line-height: 1.4; }
-html.arcade .contact-title { font-size: clamp(26px, 4.5vw, 52px); line-height: 1.4; }
-html.arcade .proj-title { font-size: clamp(15px, 2vw, 26px); line-height: 1.5; }
-html.arcade .featured h3 { font-size: clamp(16px, 2.4vw, 30px); line-height: 1.4; }
-html.arcade .skill-head { font-size: 16px; line-height: 1.6; }
-html.arcade .eyebrow, html.arcade .kicker { font-size: 10px; line-height: 1.8; }
-html.arcade .nav { font-size: 9px; }
-html.arcade .btn { font-size: 9px; }
-html.arcade .tag { font-size: 8px; }
-html.arcade .ticker { font-size: 12px; }
+
+/* CRT phosphor treatment — display headings glow warmly in red like text on an
+   old cathode-ray tube (halation/bloom), single-colour, no split. */
+html.arcade .hero-title,
+html.arcade .page-title,
+html.arcade .contact-title,
+html.arcade .proj-title,
+html.arcade .featured h3 {
+  color: #FF4632;
+  text-shadow: 0 0 1px rgba(255,150,120,.9), 0 0 8px rgba(226,40,30,.7),
+               0 0 20px rgba(191,0,33,.5), 0 0 40px rgba(191,0,33,.3);
+}
+html.arcade .hero-title .accent,
+html.arcade .contact-title .accent { color: inherit; }
 
 /* CRT power-on. The theme is NOT applied up front; instead a green scanline
    overlay (.crt-reveal) wipes in top→bottom via clip-path, led by a bright sweep
@@ -388,7 +394,7 @@ html.arcade .ticker { font-size: 12px; }
   position: fixed; inset: 0; z-index: 329; pointer-events: none;
   background:
     repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0px, rgba(0,0,0,.16) 1px, transparent 2px, transparent 3px),
-    rgba(230,0,18,.12);
+    rgba(191,0,33,.12);
   clip-path: inset(0 0 100% 0);
   animation: crt-reveal .7s linear forwards;
 }
@@ -401,11 +407,11 @@ html.arcade .ticker { font-size: 12px; }
   height: 24%;
   background: linear-gradient(to bottom,
     transparent 0%,
-    rgba(230,0,18,.12) 35%,
+    rgba(191,0,33,.12) 35%,
     rgba(255,150,160,.38) 48%,
     rgba(255,255,255,.9) 50%,
     rgba(255,150,160,.38) 52%,
-    rgba(230,0,18,.12) 65%,
+    rgba(191,0,33,.12) 65%,
     transparent 100%);
   transform: translateY(-110%);
   animation: crt-sweep .7s linear forwards;
@@ -424,7 +430,7 @@ html.arcade .ticker { font-size: 12px; }
   transform: translateX(-50%) translateY(20px);
   z-index: 320;
   background: #1a0206;
-  border: 1px solid #E60012;
+  border: 1px solid #BF0021;
   color: #ff4650;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
@@ -432,7 +438,7 @@ html.arcade .ticker { font-size: 12px; }
   text-transform: uppercase;
   padding: 14px 22px;
   border-radius: 6px;
-  box-shadow: 0 0 24px rgba(230,0,18,.45);
+  box-shadow: 0 0 24px rgba(191,0,33,.45);
   opacity: 0;
   transition: opacity .3s ease, transform .3s ease;
   text-align: center;
@@ -449,6 +455,35 @@ html.arcade .ticker { font-size: 12px; }
   color: var(--muted); opacity: .35; transition: opacity .25s ease, color .25s ease; white-space: nowrap; }
 .konami-hint:hover { opacity: 1; color: var(--accent); }
 .konami-hint i { font-style: normal; color: var(--accent); opacity: .85; }
+.konami-hint .kh-key { display: inline-block; width: 1.15em; text-align: center; transform-origin: center;
+  transition: color .18s ease, transform .18s cubic-bezier(.34,1.7,.5,1), text-shadow .18s ease; }
+.konami-hint .kh-arrow { font-size: 1.25em; line-height: 1; }
+.konami-hint .kh-horiz { font-size: 1.6em; }
+.konami-hint .kh-letter { font-size: .95em; }
+.konami-hint.entering { opacity: 1; }
+.konami-hint .kh-key.lit { color: var(--accent); font-weight: 700; transform: scale(1.5); text-shadow: 0 0 12px var(--accent); }
+.konami-hint.wrong { animation: kh-shake .4s ease; }
+.konami-hint.wrong .kh-key { color: #ff5a5f; }
+@keyframes kh-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-5px); }
+  35% { transform: translateX(5px); }
+  55% { transform: translateX(-4px); }
+  75% { transform: translateX(3px); }
+  90% { transform: translateX(-2px); }
+}
+
+/* One-time pointer beneath the THEME button on first Konami unlock */
+.unlock-hint { position: fixed; z-index: 320;
+  display: flex; align-items: center; gap: 8px;
+  background: #BF0021; color: #fff;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em;
+  padding: 10px 14px; border-radius: 8px; box-shadow: 0 12px 40px rgba(191,0,33,.4);
+  opacity: 0; transform: translateY(-6px); pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease; }
+.unlock-hint.show { opacity: 1; animation: unlock-bob 1s ease-in-out infinite; }
+.unlock-arrow { font-size: 15px; line-height: 1; }
+@keyframes unlock-bob { 0%, 100% { transform: translateY(-6px); } 50% { transform: translateY(2px); } }
 
 /* Count-up pulse on the projects-page count */
 .count-pulse { color: var(--accent); transition: color .2s ease; }
