@@ -128,8 +128,9 @@ function projectBlockHTML(p, num) {
 
       <div class="proj-media">${media(p)}${button}</div>
 
+      <div class="proj-desc">${p.description || p.summary || ''}</div>
+
       <aside class="proj-facts">
-        ${(p.description || p.summary) ? `<p class="fact-desc">${p.description || p.summary}</p>` : ''}
         ${facts}
       </aside>
 
@@ -716,6 +717,17 @@ const ARCADE_GREEN = '#BF0021'; // KONAMI RED (variable name kept for simplicity
 function arcadeIsOn() { return document.documentElement.classList.contains('arcade'); }
 function arcadeUnlocked() { return store.get('mw_arcade_unlocked') === '1'; }
 
+// Reverse code: turn Konami mode off and forget the unlock, so the panel toggle
+// disappears again (as if it had never been discovered).
+function relockKonami() {
+  if (arcadeIsOn()) setArcade(false, false);
+  store.del('mw_arcade_unlocked');
+  konamiLit = 0;
+  refreshKonamiHint();
+  if (typeof renderThemePanel === 'function' && $('#themePanel') && !$('#themePanel').hidden) renderThemePanel();
+  arcadeToast(['KONAMI MODE LOCKED', 'ENTER THE CODE TO UNLOCK AGAIN']);
+}
+
 function setArcade(on, announce) {
   store.set('mw_arcade', on ? '1' : '0');
 
@@ -807,7 +819,9 @@ function arcadeToast(lines) {
 function initKonami() {
   const SEQ = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown',
                'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+  const RSEQ = SEQ.slice().reverse(); // reverse code re-locks Konami mode
   let pos = 0;
+  let rpos = 0;
 
   // Re-apply a previously unlocked arcade state on load (no toast/animation).
   if (store.get('mw_arcade') === '1') {
@@ -830,6 +844,18 @@ function initKonami() {
     // Ignore typing in inputs/textareas.
     const tag = (e.target && e.target.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
+
+    // Reverse code (A B → → ← ← ↓ ↓ ↑ ↑) re-locks Konami mode: turns it off
+    // and hides the panel toggle, as if it had never been unlocked.
+    if (arcadeUnlocked()) {
+      if (key === RSEQ[rpos]) {
+        if (key.indexOf('arrow') === 0) e.preventDefault();
+        rpos++;
+        if (rpos === RSEQ.length) { rpos = 0; relockKonami(); return; }
+      } else {
+        rpos = (key === RSEQ[0]) ? 1 : 0;
+      }
+    }
 
     if (key === SEQ[pos]) {
       // Stop arrow keys from scrolling the page while the code is being entered.
@@ -885,7 +911,7 @@ function showThemeUnlockHint() {
 
   const hint = document.createElement('div');
   hint.className = 'unlock-hint';
-  hint.innerHTML = '<span class="unlock-arrow">&uarr;</span>New setting unlocked!';
+  hint.innerHTML = 'KONAMI MODE UNLOCKED<span class="unlock-arrow">&uarr;</span>';
   document.body.appendChild(hint);
 
   const place = () => {
@@ -905,7 +931,7 @@ function showThemeUnlockHint() {
   };
   window.addEventListener('resize', place);
   btn.addEventListener('click', dismiss);
-  setTimeout(dismiss, 6000); // auto-dismiss
+  setTimeout(dismiss, 9000); // auto-dismiss
 }
 
 

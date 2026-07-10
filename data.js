@@ -128,7 +128,7 @@ const PROJECTS = [
     description: 'Play as a pacifist windsurfing cowboy and save corrupted creatures using your trusty lasso.',
     tags:        { team: 'medium', engine: 'unreal', focus: ['threeCs', 'combat'] },
     poster:      'assets/projects/posters/zima-poster.jpg',
-    video:       'assets/projects/videos/zima.mp4',
+    video:       '',   // add assets/projects/videos/zima.mp4 here when the clip is ready
     link:        'https://buas.itch.io/zima',
 
     year:         '2025',
@@ -155,7 +155,7 @@ const PROJECTS = [
     description: 'A beautiful, minimal RTS game.',
     tags:        { team: 'medium', engine: 'unreal', focus: ['combat'] },
     poster:      'assets/projects/posters/azura-poster.jpg',
-    video:       'assets/projects/videos/azura-video.mp4',
+    video:       '',   // add assets/projects/videos/azura-video.mp4 here when the clip is ready
     link:        'https://buas.itch.io/team-gotham',
 
     year:    '',
@@ -182,7 +182,7 @@ const PROJECTS = [
     description: 'A short, action packed co-op rafting game.',
     tags:        { team: 'medium', engine: 'unreal', focus: [] },
     poster:      'assets/projects/posters/adrift-poster.jpg',
-    video:       'assets/projects/videos/adrift-video.mp4',
+    video:       '',   // add assets/projects/videos/adrift-video.mp4 here when the clip is ready
     link:        'https://twenmod.itch.io/adrift',
 
     year:    '',
@@ -208,7 +208,7 @@ const PROJECTS = [
     description: 'A physics based deck building tower stacker.',
     tags:        { team: 'small', engine: 'unity', focus: [] },
     poster:      'assets/projects/posters/tabletoptumble-poster.jpg',
-    video:       'assets/projects/videos/tabletoptumble-video.mp4',
+    video:       '',   // add assets/projects/videos/tabletoptumble-video.mp4 here when the clip is ready
     link:        'https://twenmod.itch.io/tabletop-tumble',
 
     year:    '',

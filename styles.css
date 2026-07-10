@@ -509,7 +509,7 @@ html.arcade .contact-title .accent { color: inherit; }
 /* Two columns; each block is a subgrid so the media, summary and facts
    rows line up across the pair even when a paragraph is taller. */
 #allProjects { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
-.proj { min-width: 0; display: grid; grid-template-rows: subgrid; grid-row: span 5;
+.proj { min-width: 0; display: grid; grid-template-rows: subgrid; grid-row: span 6;
   margin-top: 64px; scroll-margin-top: 90px; }
 .proj:nth-child(-n+2) { margin-top: 0; }
 .proj-head { margin-bottom: 20px; }
@@ -545,9 +545,11 @@ html.arcade .contact-title .accent { color: inherit; }
   font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: .01em; line-height: 1.4; }
 .award .medal { position: absolute; left: -3px; top: 1px; flex-shrink: 0; }
 
+.proj-desc { background: var(--surface); border: 1px solid var(--line); border-bottom: none;
+  margin: 0; padding: 15px 16px; font-size: 15px; line-height: 1.5; color: var(--text); font-weight: 500; }
 .proj-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 0;
   background: var(--line); border: 1px solid var(--line); border-radius: 0 0 8px 8px; overflow: hidden; }
-.fact-desc { grid-column: 1 / -1; background: var(--surface); margin: 0; padding: 15px 16px;
+.fact-desc { grid-column: 1 / -1; background: var(--surface); margin: 0; padding: 15px 16px; min-height: 2.6em;
   font-size: 15px; line-height: 1.5; color: var(--text); font-weight: 500; }
 .fact { display: flex; flex-direction: column; gap: 5px; background: var(--surface); padding: 14px 16px; }
 .fact dt { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em;
