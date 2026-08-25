@@ -450,16 +450,51 @@ html.arcade .contact-title .accent { color: inherit; }
 /* ---------- Footer ---------- */
 .footer { padding: 28px 56px; display: flex; justify-content: space-between; align-items: center; gap: 16px;
   font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
-.konami-hint { padding: 4px 8px;
-  font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .18em;
-  color: var(--muted); opacity: .35; transition: opacity .25s ease, color .25s ease; white-space: nowrap; }
-.konami-hint:hover { opacity: 1; color: var(--accent); }
-.konami-hint i { font-style: normal; color: var(--accent); opacity: .85; }
-.konami-hint .kh-key { display: inline-block; width: 1.15em; text-align: center; transform-origin: center;
+/* The hover state swaps in a plain string without the .kh-key spans, which are
+   what give the box its height (arrows are 1.25em, ←→ are 1.6em). A fixed height
+   + centred flex box keeps the element geometry constant no matter what text is
+   inside: the cursor never falls out of it (no hover oscillation) and the footer
+   siblings (© 2026 / BREDA, NL) never shift. Width is locked in app.js. */
+.konami-hint {
+  /* Single source of truth: every dimension below derives from --kh-fs, so
+     changing the hint's size (or overriding it in a media query) rescales the
+     cells, row height, optical nudge and hover target together. */
+  --kh-fs: 11px;
+  --kh-cell: var(--kh-fs);                      /* cell pitch = 1 character */
+  --kh-glyph: calc(var(--kh-fs) * 1.18);        /* glyph size within the cell */
+  --kh-row: calc(var(--kh-fs) * 2);             /* fixed row height */
+  padding: calc(var(--kh-fs) * 0.36) calc(var(--kh-fs) * 0.73);
+  box-sizing: content-box; position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--kh-row); line-height: 1;
+  font-family: 'JetBrains Mono', monospace; font-size: var(--kh-fs); letter-spacing: 0;
+  color: var(--muted); opacity: .35; transition: opacity .25s ease, color 0s; white-space: nowrap; }
+/* Colour eases in on hover but drops instantly on leave (transition: color 0s
+   above), so it doesn't stay red while the text re-encrypts. */
+/* Invisible hit area extending past the text so the hint can be hovered from
+   above/below without the cursor sitting on top of the glyphs. Absolutely
+   positioned, so it enlarges the hover target without affecting layout. */
+.konami-hint::before { content: ''; position: absolute;
+  inset: calc(var(--kh-row) * -0.82) calc(var(--kh-cell) * -1.27); }
+.konami-hint:hover { opacity: 1; color: var(--accent); transition: opacity .25s ease, color .25s ease; }
+/* Rolling (unresolved) glyphs stay quiet — only the landing flash is accent. */
+.konami-hint i { font-style: normal; color: var(--muted); opacity: .5; }
+/* While re-encrypting, the glitch chars lose the accent tint too. */
+.konami-hint.encrypting, .konami-hint.encrypting i { color: var(--muted); }
+/* Every character — key, separator or glitch char — sits in an identical
+   fixed-width cell, so the hint is a rigid 19-cell grid. Nothing can change
+   width, shift its neighbours or resize the box at any point in the animation.
+   Letter-spacing is 0 because the cell pitch provides the tracking. */
+.konami-hint .kh-key, .konami-hint .kh-cell {
+  display: inline-block; width: var(--kh-cell); font-size: var(--kh-glyph); line-height: var(--kh-row);
+  text-align: center; transform-origin: center; flex: 0 0 auto;
   transition: color .18s ease, transform .18s cubic-bezier(.34,1.7,.5,1), text-shadow .18s ease; }
-.konami-hint .kh-arrow { font-size: 1.25em; line-height: 1; }
-.konami-hint .kh-horiz { font-size: 1.6em; }
-.konami-hint .kh-letter { font-size: .95em; }
+/* ← and → are drawn lower on the em square than ↑↓ and B/A (measured ink
+   centres: 12.67 vs 10.91–11.17 at 11px), so lift them to a shared optical
+   centre. Expressed as a ratio of --kh-fs so it holds at any size. */
+.konami-hint .kh-horiz { margin-top: calc(var(--kh-fs) * -0.145); }
+/* The active label is plain text, so it keeps the house mono tracking. */
+.konami-hint .kh-label { letter-spacing: .18em; }
 .konami-hint.entering { opacity: 1; }
 .konami-hint .kh-key.lit { color: var(--accent); font-weight: 700; transform: scale(1.5); text-shadow: 0 0 12px var(--accent); }
 .konami-hint.wrong { animation: kh-shake .4s ease; }
@@ -562,6 +597,13 @@ html.arcade .contact-title .accent { color: inherit; }
 /* ---------- Responsive ---------- */
 @media (max-width: 1080px) {
   .brand-role { display: none; }
+}
+/* The footer's three items don't fit side by side on a phone (the konami hint
+   alone is ~200px), so wrap the hint onto its own centred line and trim the
+   gutter. Keeps the hint at full size instead of squeezing it. */
+@media (max-width: 640px) {
+  .footer { padding: 24px; flex-wrap: wrap; justify-content: space-between; row-gap: 4px; }
+  .footer .konami-hint { order: 3; flex-basis: 100%; margin: 0 auto; }
 }
 @media (max-width: 900px) {
   .site-header { padding: 16px 24px; }

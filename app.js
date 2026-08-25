@@ -249,15 +249,34 @@ function renderAllProjects() {
   }
 
   // If the URL has #slug, scroll that block into view below the fixed header.
-  if (!activeFilter && location.hash) {
-    const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if (el) {
-      requestAnimationFrame(() => {
-        const y = el.getBoundingClientRect().top + window.pageYOffset - 90;
-        window.scrollTo(0, y);
-      });
-    }
-  }
+  if (!activeFilter && location.hash) scrollToHash();
+}
+
+// Scrolls the element named in location.hash below the fixed header. Runs on a
+// short schedule rather than once: on a cold load the hero image and project
+// media have no intrinsic height yet, so a single measurement lands short (a
+// deep anchor like #contact would stop inside the projects section). Each pass
+// re-measures, and the loop bails out early once the offset stops moving.
+function scrollToHash() {
+  if (!location.hash) return;
+  let el;
+  try { el = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (e) { return; }
+  if (!el) return;
+  let last = -1;
+  const settle = () => {
+    const y = Math.round(el.getBoundingClientRect().top + window.pageYOffset - 90);
+    if (y === last) return true;
+    last = y;
+    // Explicitly instant: the page sets scroll-behavior: smooth, and each
+    // re-measure pass would otherwise restart an eased animation, cancelling
+    // the previous one so the scroll never lands. A cross-page anchor should
+    // snap anyway.
+    try { window.scrollTo({ top: y, left: 0, behavior: 'instant' }); }
+    catch (e) { window.scrollTo(0, y); }
+    return false;
+  };
+  requestAnimationFrame(settle);
+  [120, 320, 700, 1300].forEach((t) => setTimeout(settle, t));
 }
 
 
@@ -999,6 +1018,9 @@ function animateCount(el, target, label) {
 // Hovering while locked runs a glitch scramble to "Worth a try ? ? ?".
 const KONAMI_SYMBOLS = ['↑', '↑', '↓', '↓', '←', '→', '←', '→', 'B', 'A'];
 const KONAMI_SYMBOL_TEXT = KONAMI_SYMBOLS.join(' ');
+// The hover message is exactly one character per key, interleaved with blanks so
+// it lands on the same 19-cell grid: every letter resolves in a symbol's slot.
+const KONAMI_HOVER_TEXT = ['W','O','R','T','H','A','T','R','Y','?'].join(' ');
 const KONAMI_ACTIVE_TEXT = 'KONAMI MODE // ACTIVE';
 let konamiLit = 0; // how many symbols are currently highlighted (persists through hover)
 
@@ -1009,7 +1031,9 @@ function konamiKeysHTML(litCount) {
     const isHoriz = (s === '←' || s === '→');
     const cls = isLetter ? 'kh-letter' : (isHoriz ? 'kh-arrow kh-horiz' : 'kh-arrow');
     return `<span class="kh-key ${cls}${i < n ? ' lit' : ''}">${s}</span>`;
-  }).join(' ');
+  // Separators are empty cells of the same width, so the resting state is the
+  // same rigid 19-cell grid the scramble renders.
+  }).join('<span class="kh-cell"> </span>');
 }
 
 // Reset each footer hint to its resting state (key symbols when locked/off,
@@ -1017,59 +1041,142 @@ function konamiKeysHTML(litCount) {
 function refreshKonamiHint() {
   document.querySelectorAll('.konami-hint').forEach((hint) => {
     if (hint._glitching) return;
-    if (arcadeIsOn()) { hint.classList.remove('entering'); hint.textContent = KONAMI_ACTIVE_TEXT; }
+    if (arcadeIsOn()) { hint.classList.remove('entering'); hint.innerHTML = '<span class="kh-label">' + KONAMI_ACTIVE_TEXT + '</span>'; }
     else { hint.classList.toggle('entering', konamiLit > 0); hint.innerHTML = konamiKeysHTML(konamiLit); }
   });
 }
 
 function initKonamiHint() {
-  const GLITCH = '!<>-_\\/[]{}=+*^?#§±%&';
+  // One mixed pool: letters, arrows and tame symbols churn together, so a slot
+  // resolving into a letter can flicker through arrows and vice versa. Only
+  // glyphs that exist in JetBrains Mono — double arrows (⇐⇒) fall back to a
+  // wider font and would push the box past its locked width mid-animation.
+  const POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ↑↓←→↔↕!<>-_\\/[]{}=+*^?#%&';
+  const poolFor = () => POOL;
+  const esc = (ch) => ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch === '&' ? '&amp;' : ch;
   document.querySelectorAll('.konami-hint').forEach((hint) => {
     hint.removeAttribute('title');
     let hold = null, raf = null;
 
-    function scramble(toText, onDone) {
-      clearInterval(raf);
-      const from = hint.textContent;
-      const len = Math.max(from.length, toText.length);
-      const q = [];
-      for (let i = 0; i < len; i++) {
-        q.push({
-          fromC: from[i] || '',
-          toC: toText[i] || '',
-          start: Math.floor(Math.random() * 16),
-          end: Math.floor(Math.random() * 16) + 16,
-          ch: null,
-        });
-      }
-      let f = 0;
-      raf = setInterval(() => {
-        let out = '', done = 0;
-        for (const s of q) {
-          if (f >= s.end) { done++; out += s.toC; }
-          else if (f >= s.start) {
-            if (!s.ch || Math.random() < 0.28) s.ch = GLITCH[Math.floor(Math.random() * GLITCH.length)];
-            out += '<i>' + s.ch + '</i>';
-          } else { out += s.fromC; }
+    // opts.totalMs = whole animation length, opts.spread = how staggered the
+    // chars start, opts.dur = how long each char churns. The tick is dynamic:
+    // it starts brisk and eases out, so the text visibly settles rather than
+    // resolving at a flat rate. Every char renders in a fixed-width cell, so
+    // no frame can change the hint's geometry.
+    // Slot machine: every cell churns at a flat, fast tick while a resolve head
+    // sweeps left to right locking one glyph at a time. Each locked glyph dwells
+    // slightly longer than the last, so the reel visibly decelerates, and it
+    // flashes accent-bright on landing before settling.
+    function scramble(toText, onDone, opts) {
+      const o = opts || {};
+      const totalMs = o.totalMs || 3600;
+      const TICK = o.tick || 42;      // churn speed (ms per flicker)
+      const FLASH = o.flash || 420;   // how long a freshly-locked glyph glows
+      const LEAD = o.lead != null ? o.lead : 600; // pure spin before the first lock
+      clearTimeout(raf);
+      const len = toText.length;
+      const cells = [];
+      for (let i = 0; i < len; i++) cells.push({ toC: toText[i] || ' ', ch: null, used: [] });
+
+      // Blanks need no dwell — only real glyphs get a slot in the resolve order.
+      const order = cells.map((c, i) => i).filter((i) => cells[i].toC !== ' ');
+      if (o.rtl) order.reverse(); // re-encryption sweeps back right-to-left
+      const n = order.length;
+      // Dwell grows exponentially across the sweep for weight and anticipation;
+      // the flat term keeps the first few reveals from snapping past. Normalised
+      // so the whole sweep still lands inside totalMs, after a LEAD-ms spin-up.
+      const w = order.map((_, k) => 1.6 + Math.pow(1.28, k));
+      if (o.accel) w.reverse(); // ...and the sweep speeds up instead of slowing
+      const sum = w.reduce((a, b) => a + b, 0);
+      const at = []; let acc = LEAD;
+      w.forEach((x) => { acc += (x / sum) * Math.max(0, totalMs - LEAD); at.push(acc); });
+      const slot = {}; order.forEach((i, k) => { slot[i] = k; });
+
+      const cell = (inner, ch, style) => {
+        const horiz = (ch === '←' || ch === '→') ? ' kh-horiz' : '';
+        return '<span class="kh-cell' + horiz + '"' + (style ? ' style="' + style + '"' : '') + '>' + inner + '</span>';
+      };
+      const t0 = (window.performance || Date).now();
+      const step = () => {
+        const el = ((window.performance || Date).now()) - t0;
+        let out = '';
+        for (let i = 0; i < len; i++) {
+          const s = cells[i];
+          if (s.toC === ' ') { out += cell(' ', ' '); continue; }
+          const k = slot[i];
+          if (el >= at[k]) {
+            // Locked. Glow fades out over FLASH ms — interpolated inline so the
+            // per-tick re-render can't restart a CSS animation.
+            const g = Math.max(0, 1 - (el - at[k]) / FLASH);
+            const style = g > 0
+              ? 'color:var(--accent);transform:scale(' + (1 + 0.42 * g).toFixed(3) +
+                ');text-shadow:0 0 ' + (14 * g).toFixed(1) + 'px var(--accent)'
+              : '';
+            out += cell(s.toC, s.toC, style);
+            continue;
+          }
+          // Still spinning: a fresh glyph every tick, never repeating one this
+          // cycle and never previewing the real character.
+          let pool = poolFor(s.toC).split('').filter((c) => c !== s.toC && s.used.indexOf(c) < 0);
+          if (!pool.length) { s.used = []; pool = poolFor(s.toC).split('').filter((c) => c !== s.toC); }
+          s.ch = pool[Math.floor(Math.random() * pool.length)];
+          s.used.push(s.ch);
+          out += cell('<i>' + esc(s.ch) + '</i>', s.ch);
         }
         hint.innerHTML = out;
-        if (done >= q.length) { clearInterval(raf); if (onDone) onDone(); }
-        f++;
-      }, 28);
+        if (el >= at[n - 1] + FLASH) { if (onDone) onDone(); return; }
+        raf = setTimeout(step, TICK);
+      };
+      step();
     }
 
     hint.addEventListener('mouseenter', () => {
       if (arcadeIsOn()) return; // when active it just reads the status — no glitch
-      hold = setTimeout(() => { hint._glitching = true; scramble('Worth a try ? ? ?'); }, 280);
+      hold = setTimeout(() => {
+        hint._glitching = true;
+        hint.classList.remove('encrypting');
+        scramble(KONAMI_HOVER_TEXT, null, { totalMs: 3000 });
+      }, 280);
     });
     hint.addEventListener('mouseleave', () => {
       clearTimeout(hold);
       if (!hint._glitching) return;
-      scramble(KONAMI_SYMBOL_TEXT, () => { hint._glitching = false; refreshKonamiHint(); });
+      hint.classList.add('encrypting');
+      scramble(KONAMI_SYMBOL_TEXT, () => {
+        hint._glitching = false;
+        hint.classList.remove('encrypting');
+        refreshKonamiHint();
+      }, { totalMs: 1400, lead: 220, rtl: true, accel: true, flash: 0 });
     });
   });
 
   refreshKonamiHint(); // initial render
+
+  // The 19-cell grid makes every frame identical in width by construction, so
+  // this is just a belt-and-braces lock against sub-pixel reflow. Measured on
+  // an offscreen clone, and re-measured on resize/orientation change.
+  const lockHintWidths = () => {
+    document.querySelectorAll('.konami-hint').forEach((hint) => {
+      if (hint._glitching || !hint.parentElement) return;
+      hint.style.minWidth = '';
+      const cs = getComputedStyle(hint);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const probe = hint.cloneNode(true);
+      probe.style.cssText += ';position:absolute;visibility:hidden;pointer-events:none;min-width:0;left:0;top:0;';
+      hint.parentElement.appendChild(probe);
+      const w = probe.getBoundingClientRect().width;
+      probe.remove();
+      if (w) hint.style.minWidth = Math.ceil(w - padX) + 'px';
+    });
+  };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockHintWidths);
+  else lockHintWidths();
+
+  let rzTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(lockHintWidths, 150);
+  });
 }
 
 
@@ -1090,6 +1197,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initKonami();
   initPrefetch();
   initKonamiHint();
+
+  // Cross-page anchors (index.html#contact from the nav) land before the hero
+  // and cards have height, so re-settle once everything has loaded.
+  scrollToHash();
+  window.addEventListener('load', scrollToHash);
 
   // Mobile nav toggle
   const navToggle = $('#navToggle');

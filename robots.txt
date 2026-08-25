@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://maxxdw.github.io/Portfolio/sitemap.xml
+Sitemap: https://maxxdaimon.github.io/Portfolio/sitemap.xml

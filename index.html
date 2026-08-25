@@ -25,8 +25,8 @@
     "@type": "Person",
     "name": "Maxx Wever",
     "jobTitle": "Technical Game Designer",
-    "url": "https://maxxdw.github.io/Portfolio/",
-    "email": "mailto:MaxxDW@outlook.com",
+    "url": "https://maxxdaimon.github.io/Portfolio/",
+    "email": "mailto:MaxxWever@outlook.com",
     "address": { "@type": "PostalAddress", "addressLocality": "Breda", "addressCountry": "NL" },
     "alumniOf": "Breda University of Applied Sciences",
     "knowsAbout": ["Game Design", "3Cs", "Combat Design", "Systemic Gameplay", "Unreal Engine", "Unity"],
@@ -36,6 +36,9 @@
     ]
   }
   </script>
+
+  <!-- Preload the hero image (it becomes the LCP background, so fetch it early) -->
+  <link rel="preload" as="image" href="assets/hero/hero-poster.jpg">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,9 +91,10 @@
        ============================================================ -->
   <span id="top"></span>
   <section class="hero">
-    <!-- Poster shows now; drop assets/hero/hero.mp4 in to make it play -->
+    <!-- Poster shows now. To make it play, drop the clip in as
+         assets/hero/hero.mp4 and uncomment the <source> line below. -->
     <video class="hero-media" autoplay muted loop playsinline poster="assets/hero/hero-poster.jpg">
-      <source src="assets/hero/hero.mp4" type="video/mp4">
+      <!-- <source src="assets/hero/hero.mp4" type="video/mp4"> -->
     </video>
     <div class="hero-scrim"></div>
 
@@ -164,7 +168,7 @@
       <h2 class="eyebrow">CONTACT</h2>
       <h3 class="contact-title">Ask me<br>about<span class="accent"> anything.</span></h3>
       <div class="contact-links">
-        <a class="btn btn-primary" href="mailto:MaxxDW@outlook.com">MaxxDW@outlook.com</a>
+        <a class="btn btn-primary" href="mailto:MaxxWever@outlook.com">MaxxWever@outlook.com</a>
         <a class="btn btn-ghost" href="https://www.linkedin.com/in/maxx-wever-9649b9290/">LINKEDIN ↗</a>
         <a class="btn btn-ghost" href="https://maxxdw.itch.io/">ITCH.IO ↗</a>
       </div>
