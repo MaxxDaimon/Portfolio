@@ -1,163 +1,84 @@
-# Portfolio Editing Guide
+# Portfolio
 
-A static website built with plain HTML, CSS and JavaScript. No build step and
-nothing to install. Edit the files in any text editor or directly on GitHub.
-
-Almost everything you will want to change lives in `data.js`.
+Static site: plain HTML, CSS and JavaScript. No build step.
 
 ## Files
 
 ```
-index.html       Home page (hero, projects preview, about preview, contact)
-projects.html    Every project as a full block
-about.html       About page (intro, skills, experience)
-articles.html    Articles, built from data.js (shows a placeholder when empty)
-styleguide.html  Visual reference for the design system (not linked in the nav)
-404.html         Shown for broken links
-data.js          The content you edit: projects, tags, articles, ticker, theme
-app.js           The engine that renders data.js. Leave this alone
-styles.css       All styling. Default colors are the :root variables at the top
-assets/          Images, video and documents (see subfolders below)
+index.html     Home: hero and main projects
+archive.html   Other projects, one row each
+about.html     Intro, portrait, skills
+404.html       Broken links
+data.js        Project content
+app.js         Renders data.js into the pages
+styles.css     All styling
+sitemap.xml    Page list for search engines
+robots.txt     Crawler rules
+CNAME          Custom domain for GitHub Pages. Do not delete.
+assets/
+  brand/       favicon, touch icon
+  documents/   resume.pdf
+  hero/        hero-poster.jpg (optional hero.mp4)
+  portraits/   portrait.jpg (hero card and about)
+  projects/    posters/ and videos/
 ```
 
-Asset subfolders:
+## Projects
 
-```
-assets/projects/posters/   project poster images
-assets/projects/videos/    project gameplay clips (.mp4)
-assets/articles/           images for articles
-assets/portraits/          about-page portrait photos
-assets/hero/               hero background poster and optional hero.mp4
-assets/brand/              favicon and touch icons
-assets/documents/          resume.pdf
-```
-
-When you add a file, put it in the matching subfolder and reference it by its
-full path, for example `assets/projects/posters/game-name.jpg`.
-
-## Add or edit a project
-
-In `data.js`, copy any block inside `PROJECTS`, paste it, and change the values:
+Each block in `PROJECTS` in `data.js` is one project. Copy a block to add one.
 
 ```js
 {
-  slug:        'game-name',      // unique id. Home cards link to projects.html#game-name
+  slug:        'game-name',     // unique, used as the anchor #game-name
   title:       'Game Name',
-  featured:    false,            // true = large banner, false = grid card
-  showOnHome:  true,             // true = appears on the home page
-  description: 'One or two sentences, shown on the card and the block.',
-  tags:        { team: 'solo', engine: 'unity', focus: ['systems'] },
+  showOnHome:  true,            // true = home page, false = archive
+  description: 'What it is and what you owned.',
+  engine:      'Unreal Engine',
   poster:      'assets/projects/posters/game-name.jpg',
-  video:       '',               // empty = image only, else assets/projects/videos/game-name.mp4
-  link:        '',               // itch.io or external URL. Adds a VISIT button
+  video:       '',              // optional .mp4, plays over the poster
+  link:        '',              // optional, adds a button
 
-  // All fields below are optional. Leave a field empty to skip it.
-  summary:          'Short intro paragraph.',
-  role:             'Technical Game Designer',
-  added:            '2026-06',    // 'YYYY' or 'YYYY-MM'. Controls ordering
-  timeframe:        '8 weeks, 2026',
+  role:             'Technical Designer',
+  added:            '2026-06',  // sort order, newest first
+  timeframe:        '8 weeks · 2026',
   teamSize:         '12 developers',
   genre:            'Action-Adventure',
-  platforms:        ['Itch.io', 'Windows'],
-  awards:           ['Some Jam, placed 1st'],
-  responsibilities: ['What you did', 'And more'],
+  platforms:        ['itch.io', 'Windows'],
+  awards:           [],
+  responsibilities: ['What you did'],
 },
 ```
 
-Delete a block to remove that project. Every `slug` must be unique.
+Empty fields are skipped. Keep `showOnHome: true` to two or three projects.
+Don't repeat engine, team size or timeframe in the description; the facts list
+already shows them.
 
-The projects page sorts itself: featured projects first, then newest first.
-"Newest" uses `added`, and falls back to the year in `timeframe`.
+## Page copy
 
-Two switches control where a project appears:
+The hero intro is in `index.html`. The about intro and skills are in
+`about.html`. The header and footer are repeated in each page; edit all four
+when they change. The 404 page has no footer.
 
-- `featured`: `true` shows it as the wide banner, `false` as a grid card.
-- `showOnHome`: `true` shows it on the home page, `false` hides it there. It
-  always appears on the projects page.
+## Images
 
-For a home layout of one banner plus two cards, give one project
-`featured: true` and `showOnHome: true`, give two projects `featured: false` and
-`showOnHome: true`, and set `showOnHome: false` on the rest.
-
-## Tags and filters
-
-Tags live in `data.js` under `TAG_TYPES`, grouped into types. Each type sets how
-many tags a project may carry:
-
-- `multiple: false` means pick one (for example Engine: Unreal or Unity).
-- `multiple: true` means pick any number (for example Focus).
-
-In each option the left side is the short key a project uses and the right side
-is the label shown on screen. A project sets its tags per type:
-
-```js
-tags: { team: 'medium', engine: 'unreal', focus: ['threeCs', 'combat'] }
-```
-
-The projects page shows filter chips grouped by type. A type only appears as a
-filter once at least two of its options are used across your projects.
-
-## Articles
-
-Articles live in the `ARTICLES` list in `data.js`. While the list is empty the
-articles page shows an under-construction note. Add a post:
-
-```js
-{
-  title:   'What I learned tuning a camera system',
-  date:    '2026-07',        // 'YYYY' or 'YYYY-MM'. Newest first
-  summary: 'One or two sentences shown on the card.',
-  link:    'https://...',    // empty = no link yet
-  tag:     'Design',         // optional label
-},
-```
-
-## About page
-
-The intro, skills and experience are plain HTML in `about.html`, each under a
-labelled comment.
-
-- Skills: three columns (Software, Design, Professional). Add or remove `<li>`
-  items.
-- Experience: copy a `<div class="exp-row">` block to add an entry, or delete one
-  to remove it.
-
-The short intro also appears on the home page. Update both if you change it.
-
-## Portrait
-
-The about portrait is a small carousel. Its images are the `PORTRAITS` list at
-the top of the carousel section in `app.js`. Add or remove `assets/portraits/...`
-paths to change them. The first one is the default. Portraits are square.
-
-## Resume
-
-The RESUME button opens `assets/documents/resume.pdf`. Put a file with that exact
-name in that folder to make the button work.
-
-## Theme
-
-Default colors are the `:root` variables at the top of `styles.css`. Visitors can
-pick their own accent and backdrop through the THEME button. Those options are
-the `ACCENTS` and `MOODS` lists in `data.js`, and the first accent is the default.
-
-## Images and video
-
-Images use `object-fit: cover`, so they fill their frame and crop the overflow.
-Match the aspect ratio and the exact pixel size is flexible.
+Media is cropped to fill its frame.
 
 ```
-Hero background                 16:9   2560 x 1440
-Project posters and cards       16:9   up to 2560 x 1440
-Portrait photos                 1:1    1000 x 1000
+Hero       16:9   2560 x 1440
+Posters    16:9   up to 2560 x 1440
+Portrait   1:1    1000 x 1000
 ```
 
-A project shows its poster until you add a `video`, then the `.mp4` plays muted
-and looping over it. Keep clips short and compressed, since GitHub rejects files
-over 100 MB.
+Keep videos short and compressed. GitHub rejects files over 100 MB.
 
-## When the site gets a domain
+## Design
 
-In each page's `<head>`, change the `og:image` and `twitter:image` paths to the
-full `https://...` address so link previews resolve. The `sitemap.xml` and
-`robots.txt` URLs should be updated to the new domain too.
+Tokens are the `:root` variables at the top of `styles.css`; light mode
+overrides them under `[data-theme="light"]`. The header toggle saves the
+visitor's choice; first visit follows their system setting.
+
+## Domain
+
+The site runs on https://maxxwever.com. If the domain changes, update `CNAME`,
+`sitemap.xml`, `robots.txt`, and the `og:`, `twitter:` and canonical URLs
+in each page's `<head>`.
