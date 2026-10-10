@@ -18,7 +18,7 @@
   --accent:      #7D9BD8;   /* navy, lifted: text, lines, focus on dark */
   --accent-fill: #22407A;   /* navy: solid fills, always with light text */
 
-  --fs-title:  22px;    /* hero name, archive row titles */
+  --fs-title:  22px;    /* archive row titles */
   --fs-body:   17px;
   --fs-small:  15px;    /* facts, lists, secondary copy */
   --fs-label:  13px;    /* nav, buttons, section labels */
@@ -34,10 +34,10 @@
 }
 
 [data-theme="light"] {
-  --ink:     #F4F3EF;
-  --ink-2:   #E8E6E0;
-  --line:    #DCD9D1;
-  --line-2:  #C6C3B9;
+  --ink:     #F2EDE3;   /* cream */
+  --ink-2:   #E8E1D4;
+  --line:    #DCD4C5;
+  --line-2:  #C8BEAD;
   --text:    #161614;
   --muted:   #5C5A53;
   --accent:  #22407A;
@@ -123,7 +123,11 @@ body.page { padding-top: var(--bar-h); }
 .theme-toggle > span, .menu-toggle > span { display: grid; }
 .menu-toggle, .nav-theme { display: none; }
 [data-theme="light"] .icon-sun, :root:not([data-theme="light"]) .icon-moon { display: none; }
-.head-bar.open .icon-menu, .head-bar:not(.open) .icon-close { display: none; }
+/* Menu icon: both glyphs stacked; open rotates the bars out and the cross in. */
+.menu-toggle { grid-template-areas: "i"; }
+.menu-toggle > span { grid-area: i; transition: opacity .2s ease, transform .3s cubic-bezier(.2,.8,.3,1); }
+.head-bar:not(.open) .icon-close { opacity: 0; transform: rotate(-90deg) scale(.6); }
+.head-bar.open .icon-menu { opacity: 0; transform: rotate(90deg) scale(.6); }
 /* Menu open: solid bar, no fade, so it reads as one panel with the nav. */
 .head-bar.open { background: var(--ink); border-bottom-color: var(--line); transition: none; }
 
@@ -134,40 +138,72 @@ body.page { padding-top: var(--bar-h); }
   padding: var(--s3) var(--s5); border-radius: var(--radius); border: 1px solid transparent;
   font-size: var(--fs-label); font-weight: 500; letter-spacing: .01em; cursor: pointer; white-space: nowrap;
   transition: transform .18s cubic-bezier(.2,.8,.3,1), background .2s ease,
-              border-color .2s ease, color .2s ease, box-shadow .2s ease;
+              border-color .2s ease, color .2s ease;
 }
 .btn-primary { background: var(--accent-fill); border-color: var(--accent-fill); color: #EDEBE6; }
-.btn-primary:hover { color: #EDEBE6; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(34,64,122,.35); }
+.btn-primary:hover { color: #EDEBE6; transform: translateY(-2px); }
 .btn-ghost { border-color: var(--line-2); color: var(--text); background: transparent; }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-.btn:active { transform: translateY(0) scale(.985); box-shadow: none; }
+.btn:active { transform: translateY(0) scale(.985); }
 .btn-sm { padding: var(--s2) var(--s4); }
 
 /* ---------- Hero ---------- */
 .hero {
-  position: relative; height: 100vh; height: 100dvh; min-height: min(620px, 100dvh);
+  /* Fills the first screen on every device; svh ignores mobile browser bars. */
+  position: relative; height: 100vh; height: 100svh; min-height: 420px;
   overflow: hidden; background: var(--ink-2); color: var(--text);
   display: flex; align-items: flex-end;
 }
 .hero-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-scrim {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(0deg, rgba(13,13,12,.96) 4%, rgba(13,13,12,.62) 42%, rgba(13,13,12,.18) 78%);
+  background:
+    radial-gradient(ellipse 70% 55% at 0% 100%, rgba(13,13,12,.7), transparent 70%),
+    linear-gradient(0deg, rgba(13,13,12,.96) 4%, rgba(13,13,12,.62) 42%, rgba(13,13,12,.18) 78%);
 }
-.hero-inner { position: relative; z-index: 2; padding-block-end: clamp(var(--s6), 6vh, var(--s8)); }
-/* Compact card, bottom left. */
+/* Intro, bottom left, no box. Every size below runs off one progress value,
+   --t: 0 at a 375px viewport, 1 at 1400px and up. So everything scales at the
+   same rate and stops at the same widths. */
+.hero { --t: clamp(0px, (100vw - 375px) / 1025, 1px); }
+.hero-inner { position: relative; z-index: 2; padding-block-end: calc(32px + 40 * var(--t)); }
 .hero-card {
-  width: fit-content; max-width: 600px;
-  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--s4) var(--s5);
-  padding: var(--s4); border: 1px solid var(--line-2); border-radius: var(--radius);
-  background: rgba(13,13,12,.72); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  max-width: 100%;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start;
+  column-gap: calc(12px + 8 * var(--t));
+  text-shadow: 0 1px 24px rgba(0,0,0,.5);
 }
-.hero-face { width: clamp(56px, 6vw, 72px); aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius); }
+.hero-face {
+  width: calc(44px + 20 * var(--t)); aspect-ratio: 1 / 1; overflow: hidden; border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(237,235,230,.14), 0 6px 20px rgba(0,0,0,.35);
+}
 .hero-face img { width: 100%; height: 100%; object-fit: cover; }
-.hero-copy { display: grid; gap: var(--s2); justify-items: start; }
-.hero-name { margin: 0; font-size: var(--fs-title); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; }
+.hero-copy { display: grid; gap: calc(2px + 4 * var(--t)); justify-items: start; }
+.hero-name { margin: 0; font-size: calc(18px + 4 * var(--t)); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; }
 .hero-name em { font-style: normal; color: var(--accent); }
-.hero-lede { margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+/* Fixed measure in em, so the line always breaks into two balanced lines. */
+.hero-lede { margin: 0; width: 27em; max-width: 100%; font-size: calc(13px + 2 * var(--t)); line-height: 1.5; color: var(--muted); text-wrap: balance; }
+
+/* Quiet scroll cue, bottom centre. */
+.hero-scroll {
+  /* Bottom edge lines up with the intro's bottom edge. Centred when there is
+     room; otherwise it sits just right of the intro. The intro's width is
+     fixed by its parts: portrait 44-64, gap 12-20, text 27em at 13-15px. */
+  position: absolute; z-index: 3;
+  left: max(50%, calc(var(--gutter) + 407px + 82 * var(--t) + 64px));
+  bottom: calc(32px + 40 * var(--t) - var(--s2)); transform: translateX(-50%);
+  display: grid; justify-items: center; gap: 2px; padding: var(--s2) var(--s3);
+  font-size: var(--fs-label); font-weight: 500; letter-spacing: .02em; color: var(--muted);
+  transition: color .2s ease, opacity .4s ease, visibility .4s;
+}
+.hero-scroll:hover { color: var(--text); }
+.hero-scroll.gone { opacity: 0; visibility: hidden; }
+.hero-scroll svg { transition: transform .3s cubic-bezier(.2,.8,.3,1); }
+.hero-scroll:hover svg { transform: translateY(3px); }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-scroll svg { animation: hero-nudge 2.4s ease-in-out infinite; }
+  .hero-scroll:hover svg { animation: none; }
+}
+@keyframes hero-nudge { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(4px); } }
 
 /* ---------- Section scaffolding ---------- */
 .section { padding-block: clamp(var(--s7), 6vh, var(--s8)); }
@@ -183,7 +219,7 @@ body.page { padding-top: var(--bar-h); }
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
   grid-template-rows: auto auto 1fr;
   grid-template-areas: "top side" "cols side" "action side";
-  gap: var(--s5) var(--s7); align-items: start;
+  gap: var(--s5) clamp(var(--s6), 4vw, var(--s7)); align-items: start;
   scroll-margin-top: calc(var(--bar-h) + var(--s4));
 }
 .project-top { grid-area: top; display: grid; gap: var(--s2); }
@@ -201,7 +237,7 @@ body.page { padding-top: var(--bar-h); }
 .project-role { margin: 0; color: var(--accent); font-size: var(--fs-small); font-weight: 500; }
 .project-lede { margin: 0; color: var(--muted); font-size: var(--fs-body); }
 
-.project-cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: var(--s6); }
+.project-cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: var(--s5) clamp(var(--s5), 2.5vw, var(--s6)); }
 /* Sub-section headers, shared with the about page skills. */
 .project-section h3, .skills h3 { margin: 0 0 var(--s4); font-size: var(--fs-body); font-weight: 600; line-height: 1.3; color: var(--text); }
 
@@ -213,7 +249,7 @@ body.page { padding-top: var(--bar-h); }
 .highlights { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s3); }
 .highlights li {
   position: relative; padding-left: var(--s4);
-  color: var(--text); font-size: var(--fs-small); line-height: 1.5;
+  color: var(--muted); font-size: var(--fs-small); line-height: 1.5;
 }
 .highlights li::before {
   content: ''; position: absolute; left: 0; top: .62em;
@@ -228,14 +264,18 @@ body.page { padding-top: var(--bar-h); }
 .project-media video, .project-media img { width: 100%; height: 100%; object-fit: cover; }
 
 .awards { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s2); }
-.awards li { display: flex; gap: var(--s2); align-items: baseline; font-size: var(--fs-label); line-height: 1.5; color: var(--muted); }
-.awards .medal { flex-shrink: 0; width: 13px; height: 13px; color: var(--accent); transform: translateY(2px); }
+.awards li { display: flex; gap: var(--s2); align-items: flex-start; font-size: var(--fs-small); font-weight: 500; line-height: 1.45; color: var(--muted); }
+.award-icon { flex-shrink: 0; margin-top: 1px; color: var(--accent); }
 
 /* ---------- Archive ---------- */
-.archive { margin-top: var(--s2); }
+/* Rows share the parent's columns (subgrid), so text lines up whether or not a row has a button. */
+.archive {
+  margin-top: var(--s2); display: grid; column-gap: var(--s5);
+  grid-template-columns: clamp(96px, 10vw, 132px) minmax(0, 2fr) minmax(0, 3fr) auto;
+}
 .arch-row {
-  display: grid; grid-template-columns: 132px minmax(0, 2fr) minmax(0, 3fr) auto;
-  gap: var(--s5); align-items: center;
+  grid-column: 1 / -1; display: grid; grid-template-columns: subgrid;
+  gap: var(--s3) var(--s5); align-items: center;
   padding: var(--s4) 0; border-top: 1px solid var(--line);
 }
 .arch-row:last-child { border-bottom: 1px solid var(--line); }
@@ -245,10 +285,13 @@ body.page { padding-top: var(--bar-h); }
 .arch-thumb img, .arch-thumb video { width: 100%; height: 100%; object-fit: cover; }
 .arch-meta { display: flex; flex-direction: column; gap: var(--s1); }
 .arch-title { margin: 0; font-size: var(--fs-title); font-weight: 600; letter-spacing: -.02em; }
+.arch-body { display: grid; gap: var(--s1); }
 .arch-desc { margin: 0; color: var(--muted); font-size: var(--fs-small); }
+.arch-context { margin: 0; font-size: var(--fs-label); font-weight: 500; color: var(--text); }
+.arch-body .awards { margin-top: var(--s1); }
 
 /* ---------- About ---------- */
-.about-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: var(--s7); align-items: start; }
+.about-grid { display: grid; grid-template-columns: clamp(220px, 26vw, 320px) minmax(0, 1fr); gap: clamp(var(--s6), 4vw, var(--s7)); align-items: start; }
 .about-copy p { margin: 0 0 var(--s4); max-width: var(--measure); }
 .about-copy p:last-child { margin-bottom: 0; }
 .portrait { aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius); }
@@ -278,7 +321,13 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
 html.theme-anim .switch-knob { transition: transform .42s cubic-bezier(.22,1,.36,1), width .18s ease, background-color .4s ease !important; }
 html.theme-anim .switch-knob > span { transition: opacity .25s ease, transform .42s cubic-bezier(.22,1,.36,1) !important; }
 html.theme-anim .sw-label > span { transition: opacity .25s ease, transform .35s cubic-bezier(.2,.8,.3,1), color .4s ease !important; }
-@media (prefers-reduced-motion: reduce) { .switch-knob, .switch-knob > span, .sw-label > span { transition: none !important; } }
+/* No menu animation while the window is being resized, so crossing the
+   breakpoint doesn't flash the panel. */
+html.resizing .head-nav, html.resizing .head-nav > *, html.resizing .menu-toggle > span { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .switch-knob, .switch-knob > span, .sw-label > span,
+  .head-nav, .head-nav > *, .menu-toggle > span { transition: none !important; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .reveal { opacity: 0; transform: translateY(14px); }
   .reveal.in { opacity: 1; transform: none; transition: opacity .7s ease, transform .7s cubic-bezier(.16,.7,.3,1); }
@@ -290,37 +339,46 @@ html.theme-anim .sw-label > span { transition: opacity .25s ease, transform .35s
 @media (max-width: 1180px) {
   .project {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto;
-    grid-template-areas: "top side" "cols cols" "action action"; column-gap: var(--s6);
+    grid-template-areas: "top side" "cols cols" "action action";
   }
   .project-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 @media (max-width: 1000px) {
-  .hero-card { max-width: 480px; gap: var(--s3) var(--s4); }
-  .about-grid { grid-template-columns: 1fr; gap: var(--s6); }
+  .about-grid { grid-template-columns: 1fr; }
   .portrait { max-width: 320px; }
-  .arch-row { grid-template-columns: 120px 1fr; align-items: start; }
-  .arch-row .arch-desc, .arch-row .btn { grid-column: 2; }
+  .archive { grid-template-columns: clamp(96px, 10vw, 132px) minmax(0, 1fr); }
+  .arch-row { align-items: start; }
+  .arch-row .arch-body, .arch-row .btn { grid-column: 2; }
   .arch-row .btn { justify-self: start; }
 }
 @media (max-width: 900px) {
   .project { grid-template-columns: minmax(0, 1fr); grid-template-areas: "side" "top" "cols" "action"; }
 }
-/* Once the hero card would span most of the width, drop it: the image carries the hero alone. */
-@media (max-width: 760px) {
-  .hero-inner { display: none; }
-}
 @media (max-width: 640px) {
-  .hero { height: 75svh; min-height: 420px; }
+  /* Scroll cue fades out where the nav becomes the menu button. */
+  .hero-scroll { opacity: 0; visibility: hidden; }
   /* Nav collapses into a menu below the bar. */
   .menu-toggle { display: grid; }
+  /* Panel fades and drops in; links follow one after another. Closing is quicker. */
   .head-nav {
-    display: none; position: absolute; top: 100%; left: 0; right: 0; margin: 0;
+    display: flex; position: absolute; top: 100%; left: 0; right: 0; margin: 0;
     flex-direction: column; align-items: stretch; gap: 0;
     padding: var(--s2) var(--gutter) var(--s4);
     background: var(--ink); border-bottom: 1px solid var(--line);
+    opacity: 0; visibility: hidden; transform: translateY(-8px);
+    transition: opacity .15s ease, transform .15s ease, visibility .15s;
   }
+  .head-nav > * { opacity: 0; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease; }
   .head-nav a { font-size: var(--fs-body); padding-block: var(--s3); color: var(--text); }
-  .head-bar.open .head-nav { display: flex; }
+  .head-bar.open .head-nav {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity .2s ease, transform .25s cubic-bezier(.2,.8,.3,1), visibility 0s;
+  }
+  .head-bar.open .head-nav > * { opacity: 1; transform: none; transition: opacity .2s ease, transform .25s cubic-bezier(.2,.8,.3,1); }
+  .head-bar.open .head-nav > :nth-child(2) { transition-delay: .03s; }
+  .head-bar.open .head-nav > :nth-child(3) { transition-delay: .06s; }
+  .head-bar.open .head-nav > :nth-child(4) { transition-delay: .09s; }
+  .head-bar.open .head-nav > :nth-child(5) { transition-delay: .12s; }
   /* Theme switch lives in the menu here, so the bar keeps one control. */
   .head-tools .theme-toggle { display: none; }
   /* Theme row: label left, switch right. The knob carries the active icon;
@@ -360,5 +418,5 @@ html.theme-anim .sw-label > span { transition: opacity .25s ease, transform .35s
   :root:not([data-theme="light"]) .switch-knob .sw-light { transform: rotate(90deg) scale(.4); }
   [data-theme="light"] .sw-label .sw-dark { transform: translateY(-6px); }
   :root:not([data-theme="light"]) .sw-label .sw-light { transform: translateY(6px); }
-  .project-cols { grid-template-columns: 1fr; gap: var(--s5); }
+  .project-cols { grid-template-columns: 1fr; }
 }

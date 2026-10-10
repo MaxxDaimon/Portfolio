@@ -10,33 +10,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/brand/favicon.png?v=3">
+  <link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg?v=3">
+  <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}</script>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
 
   <style>
-    /* Fallback values: a 404 can be served from any URL depth, where
-       styles.css may not resolve. */
-    .nf {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: flex-start; justify-content: center; gap: var(--s5, 24px);
-    }
+    /* URLs on this page are root-absolute: GitHub Pages serves it at any depth. */
+    .nf { flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--s5); }
     .nf h1 {
       margin: 0; font-size: clamp(30px, 4vw, 58px); line-height: 1.08;
       font-weight: 600; letter-spacing: -.03em;
     }
-    .nf h1 em { font-style: normal; color: var(--accent, #7D9BD8); }
+    .nf h1 em { font-style: normal; color: var(--accent); }
   </style>
 </head>
 <body class="page">
   <div class="head-bar">
   <header class="wrap head">
-    <a class="head-name" href="index.html">Maxx Wever<span class="meta">Technical Designer</span></a>
+    <a class="head-name" href="/">Maxx Wever<span class="meta">Technical Designer</span></a>
     <nav class="head-nav" id="site-nav">
-      <a href="index.html#work">Projects</a>
-      <a href="archive.html">Archive</a>
-      <a href="about.html">About</a>
-      <a href="assets/documents/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a href="/#work">Projects</a>
+      <a href="/archive">Archive</a>
+      <a href="/about">About</a>
+      <a href="/assets/documents/resume.pdf" target="_blank" rel="noopener">Resume</a>
       <button class="theme-toggle nav-theme" type="button" role="switch" aria-checked="false" aria-label="Light mode">
         <span class="sw-label"><span class="sw-dark">Dark mode</span><span class="sw-light">Light mode</span></span>
         <span class="switch-track">
@@ -60,9 +58,9 @@
 
   <main class="wrap section nf">
     <h1>Page not found<em>.</em></h1>
-    <a class="btn btn-primary" href="index.html">Back home</a>
+    <a class="btn btn-primary" href="/">Back home</a>
   </main>
 
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>

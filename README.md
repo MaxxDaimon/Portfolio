@@ -1,84 +1,59 @@
 # Portfolio
 
-Static site: plain HTML, CSS and JavaScript. No build step.
+My portfolio site. Plain HTML, CSS and JavaScript, no build step. Hosted on GitHub Pages at https://maxxwever.com.
 
 ## Files
 
 ```
-index.html     Home: hero and main projects
-archive.html   Other projects, one row each
-about.html     Intro, portrait, skills
-404.html       Broken links
-data.js        Project content
-app.js         Renders data.js into the pages
+index.html     Home page
+archive.html   Smaller projects
+about.html     About me and skills
+404.html       Page not found
+data.js        All project content
+app.js         Builds the project sections from data.js
 styles.css     All styling
-sitemap.xml    Page list for search engines
-robots.txt     Crawler rules
-CNAME          Custom domain for GitHub Pages. Do not delete.
-assets/
-  brand/       favicon, touch icon
-  documents/   resume.pdf
-  hero/        hero-poster.jpg (optional hero.mp4)
-  portraits/   portrait.jpg (hero card and about)
-  projects/    posters/ and videos/
+CNAME          Custom domain, don't delete
+assets/        Images, icons and resume
 ```
 
-## Projects
+## Adding a project
 
-Each block in `PROJECTS` in `data.js` is one project. Copy a block to add one.
+Copy a block in `data.js` and edit it. Leave out any field you don't need.
 
 ```js
 {
-  slug:        'game-name',     // unique, used as the anchor #game-name
+  slug:        'game-name',
   title:       'Game Name',
-  showOnHome:  true,            // true = home page, false = archive
-  description: 'What it is and what you owned.',
+  showOnHome:  true,   // false puts it in the archive
+  description: 'I was the [role] on [Game], a [genre] where [premise].',
   engine:      'Unreal Engine',
   poster:      'assets/projects/posters/game-name.jpg',
-  video:       '',              // optional .mp4, plays over the poster
-  link:        '',              // optional, adds a button
+  video:       '',     // optional .mp4
+  link:        '',     // optional, adds a button
+  linkLabel:   '',     // button text, default "Read more"
 
-  role:             'Technical Designer',
-  added:            '2026-06',  // sort order, newest first
-  timeframe:        '8 weeks · 2026',
-  teamSize:         '12 developers',
-  genre:            'Action-Adventure',
-  platforms:        ['itch.io', 'Windows'],
-  awards:           [],
-  responsibilities: ['What you did'],
+  role:        'Technical Designer',
+  added:       '2026-06',   // newest shows first
+  timeframe:   '8 weeks · 2026',
+  teamSize:    '12 developers',
+  genre:       'Action-Adventure',
+  platforms:   ['itch.io', 'Windows'],
+  awards:      [],
+  responsibilities: ['What I did'],
 },
 ```
 
-Empty fields are skipped. Keep `showOnHome: true` to two or three projects.
-Don't repeat engine, team size or timeframe in the description; the facts list
-already shows them.
-
-## Page copy
-
-The hero intro is in `index.html`. The about intro and skills are in
-`about.html`. The header and footer are repeated in each page; edit all four
-when they change. The 404 page has no footer.
+Home projects start the description with my role. Archive projects say what the game is, then why or how it was made. Archive rows only show the title, year, description, team size, engine, awards and link.
 
 ## Images
 
-Media is cropped to fill its frame.
+Posters are 16:9, the portrait is square. Videos should stay small, GitHub rejects files over 100 MB.
 
-```
-Hero       16:9   2560 x 1440
-Posters    16:9   up to 2560 x 1440
-Portrait   1:1    1000 x 1000
-```
+## Editing
 
-Keep videos short and compressed. GitHub rejects files over 100 MB.
-
-## Design
-
-Tokens are the `:root` variables at the top of `styles.css`; light mode
-overrides them under `[data-theme="light"]`. The header toggle saves the
-visitor's choice; first visit follows their system setting.
-
-## Domain
-
-The site runs on https://maxxwever.com. If the domain changes, update `CNAME`,
-`sitemap.xml`, `robots.txt`, and the `og:`, `twitter:` and canonical URLs
-in each page's `<head>`.
+- Hero and about text are in `index.html` and `about.html`.
+- The header and footer are copied into every page, so change all of them.
+- Link to pages without `.html` (`/archive`, `/about`, `/`). GitHub Pages serves them that way.
+- Colours are at the top of `styles.css`.
+- When replacing the favicon, bump the `?v=` number in each page's `<head>`.
+- If the domain changes, update `CNAME`, `sitemap.xml`, `robots.txt` and the URLs in each page's `<head>`.

@@ -20,7 +20,13 @@ function fact(label, value) {
   return `<div class="fact"><dt>${label}</dt><dd>${value}</dd></div>`;
 }
 
-const MEDAL = '<svg class="medal" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="6"></circle><path d="M9 9.5 6.5 3M15 9.5 17.5 3M9.5 4h5"></path></svg>';
+const AWARD = '<svg class="award-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"></circle><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"></path></svg>';
+
+function awardsHTML(p) {
+  return (p.awards || []).length
+    ? `<ul class="awards">${p.awards.map((x) => `<li>${AWARD}<span>${x}</span></li>`).join('')}</ul>`
+    : '';
+}
 
 function projectHTML(p) {
   const facts = [
@@ -38,11 +44,8 @@ function projectHTML(p) {
        </div>`
     : '';
 
-  const awards = (p.awards || []).length
-    ? `<ul class="awards">${p.awards.map((a) => `<li>${MEDAL}<span>${a}</span></li>`).join('')}</ul>`
-    : '';
   const action = p.link
-    ? `<a class="btn btn-primary project-action" href="${p.link}" target="_blank" rel="noopener">Read more ↗</a>`
+    ? `<a class="btn btn-primary project-action" href="${p.link}" target="_blank" rel="noopener">${p.linkLabel || 'Read more'} ↗</a>`
     : '';
 
   return `
@@ -62,38 +65,40 @@ function projectHTML(p) {
       ${action}
       <div class="project-side">
         <div class="project-media">${mediaHTML(p)}</div>
-        ${awards}
+        ${awardsHTML(p)}
       </div>
     </article>`;
 }
 
 function archiveRowHTML(p) {
   const year = yearOf(p);
+  const context = [p.teamSize, p.engine].filter(Boolean).join(' · ');
   return `
     <div class="arch-row reveal" id="${p.slug}">
       <div class="arch-thumb">${mediaHTML(p)}</div>
       <div class="arch-meta">
-        <span class="meta">${year}</span>
         <h2 class="arch-title">${p.title}</h2>
+        ${year ? `<span class="meta">${year}</span>` : ''}
       </div>
-      <p class="arch-desc">${p.description || ''}</p>
-      ${p.link ? `<a class="btn btn-ghost btn-sm" href="${p.link}" target="_blank" rel="noopener">Read more ↗</a>` : ''}
+      <div class="arch-body">
+        <p class="arch-desc">${p.description || ''}</p>
+        ${context ? `<p class="arch-context">${context}</p>` : ''}
+        ${awardsHTML(p)}
+      </div>
+      ${p.link ? `<a class="btn btn-ghost btn-sm" href="${p.link}" target="_blank" rel="noopener">${p.linkLabel || 'Read more'} ↗</a>` : ''}
     </div>`;
 }
 
 // Newest first, by `added`, else the year in `timeframe`.
+// Array.sort is stable, so equal keys keep their data.js order.
 function byNewest(list) {
-  return list.map((p, i) => ({ p, i })).sort((a, b) => {
-    const ka = String(a.p.added || yearOf(a.p) || '0');
-    const kb = String(b.p.added || yearOf(b.p) || '0');
-    if (ka !== kb) return kb.localeCompare(ka);
-    return a.i - b.i;
-  }).map((x) => x.p);
+  const key = (p) => String(p.added || yearOf(p));
+  return [...list].sort((a, b) => key(b).localeCompare(key(a)));
 }
 
 function initReveal() {
   if (!window.IntersectionObserver) return;
-  if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { rootMargin: '0px 0px -8% 0px' });
@@ -106,7 +111,11 @@ function initReveal() {
 function initHeadBar() {
   const bar = q('.head-bar');
   if (!bar) return;
-  const onScroll = () => bar.classList.toggle('stuck', window.scrollY > 24);
+  const cue = q('.hero-scroll');
+  const onScroll = () => {
+    bar.classList.toggle('stuck', window.scrollY > 24);
+    if (cue) cue.classList.toggle('gone', window.scrollY > 80);
+  };
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 }
@@ -141,17 +150,36 @@ function initMenu() {
   bar.querySelectorAll('.head-nav a').forEach((l) => l.addEventListener('click', () => set(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
   matchMedia('(min-width: 641px)').addEventListener('change', (e) => { if (e.matches) set(false); });
+  let t;
+  window.addEventListener('resize', () => {
+    document.documentElement.classList.add('resizing');
+    clearTimeout(t);
+    t = setTimeout(() => document.documentElement.classList.remove('resizing'), 200);
+  });
+}
+
+// Links are written clean (/archive). Only the live host maps those to .html
+// files, so when the page itself was opened as a .html file (preview, local
+// copy), point links at the files instead.
+function fixLocalLinks() {
+  if (!/\.html$/.test(location.pathname) && location.protocol !== 'file:') return;
+  const pages = { '/': 'index.html', '/archive': 'archive.html', '/about': 'about.html' };
+  document.querySelectorAll('a[href^="/"]').forEach((el) => {
+    const [path, hash] = el.getAttribute('href').split('#');
+    if (pages[path]) el.setAttribute('href', pages[path] + (hash ? '#' + hash : ''));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  fixLocalLinks();
   initTheme();
   initMenu();
-  const main = q('#mainProjects');
-  if (main && window.PROJECTS) main.innerHTML = byNewest(PROJECTS.filter((p) => p.showOnHome)).map(projectHTML).join('');
-
-  const arch = q('#archive');
-  if (arch && window.PROJECTS) arch.innerHTML = byNewest(PROJECTS.filter((p) => !p.showOnHome)).map(archiveRowHTML).join('');
-
+  const render = (sel, home, tpl) => {
+    const el = q(sel);
+    if (el && window.PROJECTS) el.innerHTML = byNewest(PROJECTS.filter((p) => !!p.showOnHome === home)).map(tpl).join('');
+  };
+  render('#mainProjects', true, projectHTML);
+  render('#archive', false, archiveRowHTML);
   initHeadBar();
   initReveal();
 });

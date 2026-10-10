@@ -21,20 +21,21 @@
   <meta name="twitter:description" content="Technical designer specialising in 3Cs, combat and systemic gameplay. Selected projects.">
   <meta name="twitter:image" content="https://maxxwever.com/assets/projects/posters/zima-poster.jpg">
 
-  <link rel="icon" type="image/png" href="assets/brand/favicon.png">
-  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/brand/favicon.png?v=3">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg?v=3">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png?v=3">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}</script>
   <link rel="stylesheet" href="styles.css">
-  <link rel="preload" as="image" href="assets/hero/hero-poster.jpg">
+  <link rel="preload" as="image" href="assets/projects/posters/zima-poster.jpg">
 </head>
 <body>
   <div class="head-bar">
   <header class="wrap head">
-    <a class="head-name" href="index.html">Maxx Wever<span class="meta">Technical Designer</span></a>
+    <a class="head-name" href="/">Maxx Wever<span class="meta">Technical Designer</span></a>
     <nav class="head-nav" id="site-nav">
-      <a href="index.html#work" aria-current="page">Projects</a>
-      <a href="archive.html">Archive</a>
-      <a href="about.html">About</a>
+      <a href="/#work" aria-current="page">Projects</a>
+      <a href="/archive">Archive</a>
+      <a href="/about">About</a>
       <a href="assets/documents/resume.pdf" target="_blank" rel="noopener">Resume</a>
       <button class="theme-toggle nav-theme" type="button" role="switch" aria-checked="false" aria-label="Light mode">
         <span class="sw-label"><span class="sw-dark">Dark mode</span><span class="sw-light">Light mode</span></span>
@@ -59,9 +60,12 @@
 
   <h1 class="sr-only">Maxx Wever, technical designer</h1>
   <section class="hero">
-    <!-- Swap for a <video> once assets/hero/hero.mp4 exists. -->
-    <img class="hero-media" src="assets/hero/hero-poster.jpg" alt="">
+    <img class="hero-media" src="assets/projects/posters/zima-poster.jpg" alt="">
     <div class="hero-scrim"></div>
+    <a class="hero-scroll" href="#work">
+      <span>Projects</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+    </a>
     <div class="wrap hero-inner">
       <div class="hero-card">
         <div class="hero-face"><img src="assets/portraits/portrait.jpg" alt="Maxx Wever"></div>
@@ -69,7 +73,6 @@
           <p class="hero-name">Maxx Wever<em>.</em></p>
           <p class="hero-lede">Technical designer with a passion for building game systems that create unforgettable experiences.</p>
         </div>
-        <a class="btn btn-primary btn-sm" href="#work">Projects ↓</a>
       </div>
     </div>
   </section>
@@ -77,7 +80,7 @@
   <section class="wrap section" id="work">
     <div class="projects" id="mainProjects"></div>
     <div class="section-foot">
-      <a class="btn btn-ghost btn-sm" href="archive.html">Project archive →</a>
+      <a class="btn btn-ghost btn-sm" href="/archive">Project archive →</a>
     </div>
   </section>
 
