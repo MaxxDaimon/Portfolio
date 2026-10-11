@@ -80,14 +80,14 @@ var PROJECTS = [
     slug:        'soul-reaper',
     title:       'Soul Reaper',
     showOnHome:  false,
-    description: 'A horde survival game inspired by Vampire Survivors, built to expand my knowledge on progression and upgrade systems.',
+    description: 'A horde survival game inspired by Vampire Survivors, built to expand my knowledge on progression and upgrade systems. Made in 8 weeks as a solo project.',
     engine:      'Unreal Engine',
     poster:      'assets/projects/posters/soulreaper-poster.jpg',
     link:        'https://www.youtube.com/watch?v=G9dI4CBWYRU',
     linkLabel:   'Watch video',
 
     added:       '2025-01',
-    timeframe:   '2025',
+    timeframe:   '8 weeks · 2025',
     teamSize:    'Solo',
   },
 
