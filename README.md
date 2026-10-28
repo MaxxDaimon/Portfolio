@@ -29,6 +29,7 @@ Copy a block in `data.js` and edit it. Leave out any field you don't need.
   engine:      'Unreal Engine',
   poster:      'assets/projects/posters/game-name.jpg',
   video:       '',     // optional .mp4
+  clips:       [],     // optional { src, caption } videos under the main media
   link:        '',     // optional, adds a button
   linkLabel:   '',     // button text, default "Read more"
 
@@ -47,7 +48,7 @@ Home projects start the description with my role. Archive projects say what the 
 
 ## Images
 
-Posters are 16:9, the portrait is square. Videos should stay small, GitHub rejects files over 100 MB.
+Posters are 16:9, the portrait is square. Videos should stay small, GitHub rejects files over 100 MB. They live in `assets/projects/videos/`, compressed without audio: `ffmpeg -i in.mp4 -an -vf "scale=1280:-2,setsar=1" -c:v libx264 -preset slow -crf 25 -pix_fmt yuv420p -movflags +faststart out.mp4`.
 
 ## Editing
 

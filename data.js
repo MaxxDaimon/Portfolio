@@ -10,6 +10,10 @@ var PROJECTS = [
     description: 'I was the 3Cs designer on ZIMA, a third-person boss-rush adventure where you play as a windsurfing cowboy saving a giant corrupted creature.',
     engine:      'Unreal Engine',
     poster:      'assets/projects/posters/zima-poster.jpg',
+    clips: [
+      { src: 'assets/projects/videos/zima-camera-v1.mp4', caption: 'Camera, first version' },
+      { src: 'assets/projects/videos/zima-camera-v2.mp4', caption: 'Camera, first iteration' },
+    ],
 
     role:        'Technical Designer',
 
