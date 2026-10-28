@@ -15,16 +15,6 @@ function mediaHTML(p) {
     : `<img src="${p.poster}" alt="${p.title}" loading="lazy" decoding="async">`;
 }
 
-function clipsHTML(p) {
-  return (p.clips || []).length
-    ? `<div class="clips">${p.clips.map((c) => `
-         <figure class="clip">
-           <div class="project-media"><video autoplay muted loop playsinline preload="metadata"><source src="${c.src}" type="video/mp4"></video></div>
-           <figcaption>${c.caption}</figcaption>
-         </figure>`).join('')}</div>`
-    : '';
-}
-
 function fact(label, value) {
   if (!value) return '';
   return `<div class="fact"><dt>${label}</dt><dd>${value}</dd></div>`;
@@ -75,7 +65,6 @@ function projectHTML(p) {
       ${action}
       <div class="project-side">
         <div class="project-media">${mediaHTML(p)}</div>
-        ${clipsHTML(p)}
         ${awardsHTML(p)}
       </div>
     </article>`;
