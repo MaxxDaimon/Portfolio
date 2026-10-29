@@ -34,10 +34,10 @@
 }
 
 [data-theme="light"] {
-  --ink:     #F2EDE3;   /* cream */
-  --ink-2:   #E8E1D4;
-  --line:    #DCD4C5;
-  --line-2:  #C8BEAD;
+  --ink:     #E9E2D4;   /* cream */
+  --ink-2:   #DED5C4;
+  --line:    #D0C6B3;
+  --line-2:  #BBAF99;
   --text:    #161614;
   --muted:   #5C5A53;
   --accent:  #22407A;
@@ -112,7 +112,7 @@ body.page { padding-top: var(--bar-h); }
 .head-name span { display: block; margin-top: 1px; }
 .head-nav { display: flex; gap: var(--s5); align-items: center; margin-left: auto; }
 .head-nav a { font-size: var(--fs-label); font-weight: 500; color: var(--muted); transition: color .2s ease; }
-.head-nav a:hover, .head-nav a[aria-current="page"] { color: var(--text); }
+.head-nav a:hover, .head-nav a[aria-current="page"], .head-nav a[aria-current="location"] { color: var(--text); }
 .head-tools { display: flex; align-items: center; margin-right: -10px; }
 .theme-toggle, .menu-toggle {
   display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
@@ -208,8 +208,9 @@ body.page { padding-top: var(--bar-h); }
 /* ---------- Section scaffolding ---------- */
 .section { padding-block: clamp(var(--s7), 6vh, var(--s8)); }
 #work { scroll-margin-top: calc(var(--bar-h) + var(--s4)); padding-block-start: 0; }
+#archive, #about { scroll-margin-top: var(--bar-h); }
+.section-title { margin: 0 0 var(--s6); font-size: clamp(26px, 2.6vw, 38px); line-height: 1.06; font-weight: 600; letter-spacing: -.03em; }
 #mainProjects { margin-top: clamp(var(--s6), 5vh, var(--s7)); }
-.section-foot { display: flex; justify-content: center; margin-top: clamp(var(--s7), 6vh, var(--s8)); }
 
 /* ---------- Project (home page) ---------- */
 .projects { display: flex; flex-direction: column; gap: clamp(64px, 9vh, 112px); }
@@ -339,12 +340,6 @@ body.page { padding-top: var(--bar-h); }
 .case-problem { margin-bottom: 0; padding: var(--s4) var(--s5); border-radius: var(--radius); background: var(--ink-2); }
 .case-problem p { margin: 0; }
 .case-problem .case-label { margin-bottom: var(--s1); }
-/* Empty media frame until a clip or image replaces it. */
-.media-slot {
-  aspect-ratio: 16 / 9; display: grid; place-items: center; padding: var(--s4);
-  border-radius: var(--radius); background: var(--ink-2);
-  font-size: var(--fs-label); font-weight: 500; color: var(--muted); text-align: center;
-}
 
 @media (max-width: 900px) {
   .case-body { grid-template-columns: 1fr; }
@@ -354,11 +349,15 @@ body.page { padding-top: var(--bar-h); }
 }
 
 /* ---------- About ---------- */
-.about-grid { display: grid; grid-template-columns: clamp(220px, 26vw, 320px) minmax(0, 1fr); gap: clamp(var(--s6), 4vw, var(--s7)); align-items: start; }
-.about-copy p { margin: 0 0 var(--s4); max-width: var(--measure); }
-.about-copy p:last-child { margin-bottom: 0; }
+.about-grid { display: grid; grid-template-columns: clamp(220px, 26vw, 320px) minmax(0, 1fr); gap: clamp(var(--s6), 4vw, var(--s7)); align-items: stretch; }
+/* Copy fills the portrait's height so the resume button sits on its bottom edge. */
+.about-copy { display: flex; flex-direction: column; align-items: flex-start; }
 .portrait { aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius); }
 .portrait img { width: 100%; height: 100%; object-fit: cover; }
+.about-copy p { margin: 0 0 var(--s4); max-width: var(--measure); color: var(--muted); }
+.about-copy p:last-of-type { margin-bottom: 0; }
+.about-resume { margin-top: auto; }
+.about-copy p:last-of-type { margin-bottom: var(--s5); }
 
 .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s6);
   margin-top: clamp(var(--s7), 7vh, var(--s8)); }
@@ -407,7 +406,7 @@ html.resizing .head-nav, html.resizing .head-nav > *, html.resizing .menu-toggle
   .project-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 @media (max-width: 1000px) {
-  .about-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; align-items: start; }
   .portrait { max-width: 320px; }
   .archive { grid-template-columns: clamp(96px, 10vw, 132px) minmax(0, 1fr); }
   .arch-row { align-items: start; }

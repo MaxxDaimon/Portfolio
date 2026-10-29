@@ -1,13 +1,9 @@
 # Portfolio
 
-My portfolio site. Plain HTML, CSS and JavaScript, no build step. Hosted on GitHub Pages at https://maxxwever.com.
-
 ## Files
 
 ```
-index.html     Home page
-archive.html   Smaller projects
-about.html     About me and skills
+index.html     Home page: projects, archive and about
 zima.html      ZIMA project page
 404.html       Page not found
 data.js        All project content
@@ -53,10 +49,10 @@ Posters are 16:9, the portrait is square. Videos should stay small, GitHub rejec
 
 ## Editing
 
-- Hero and about text are in `index.html` and `about.html`.
+- Hero and about text are in `index.html`.
 - The header and footer are copied into every page, so change all of them.
 - A new project page: copy `zima.html`, set `page` in `data.js`, and add the page to `fixLocalLinks` in `app.js` and to `sitemap.xml`.
-- Link to pages without `.html` (`/archive`, `/about`, `/`). GitHub Pages serves them that way.
+- Link to pages without `.html` (`/zima`, `/`). GitHub Pages serves them that way.
 - Colors are at the top of `styles.css`.
 - When replacing the favicon, bump the `?v=` number in each page's `<head>`.
 - If the domain changes, update `CNAME`, `sitemap.xml`, `robots.txt` and the URLs in each page's `<head>`.

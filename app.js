@@ -1,5 +1,5 @@
-/* Renders data.js: full project blocks on the home page, one row
-   per project on the archive. */
+/* Renders data.js on the home page: full blocks for main projects,
+   one row per archived project. */
 
 const q = (sel) => document.querySelector(sel);
 
@@ -168,6 +168,46 @@ function initHashScroll() {
   ['wheel', 'touchstart', 'keydown'].forEach((t) => addEventListener(t, () => { moved = true; }, { once: true, passive: true }));
 }
 
+// Home page: the nav link for the section in view lights up. A section is
+// in view once its top passes a third of the way down the screen; at the
+// very bottom, the last section. Nothing is lit over the hero.
+function initNavSpy() {
+  const links = [...document.querySelectorAll('.head-nav a')].filter((l) => {
+    const h = l.getAttribute('href').split('#')[1];
+    return h && q('#' + h);
+  });
+  if (!links.length) return;
+  const secs = links.map((l) => q('#' + l.getAttribute('href').split('#')[1]));
+  let frame;
+  const update = () => {
+    frame = null;
+    const line = innerHeight / 3;
+    let i = -1;
+    secs.forEach((s, k) => { if (s.getBoundingClientRect().top <= line) i = k; });
+    if (scrollY > 0 && innerHeight + scrollY >= document.documentElement.scrollHeight - 2) i = secs.length - 1;
+    links.forEach((l, k) => k === i ? l.setAttribute('aria-current', 'location') : l.removeAttribute('aria-current'));
+  };
+  update();
+  addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
+  addEventListener('resize', update);
+  addEventListener('load', update);
+}
+
+// Videos load only their first frame up front, so every frame shows a
+// picture straight away. Each one fully loads and starts playing once it is
+// within a screen of the viewport, so it is already running when it scrolls
+// into view, and pauses again once it is well out of view.
+function initLazyVideos() {
+  const vids = document.querySelectorAll('video[data-lazy]');
+  if (!vids.length) return;
+  const play = (v) => { v.preload = 'auto'; const p = v.play(); if (p) p.catch(() => {}); };
+  if (!window.IntersectionObserver) { vids.forEach(play); return; }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.isIntersecting ? play(e.target) : e.target.pause());
+  }, { rootMargin: '100% 0px' });
+  vids.forEach((v) => io.observe(v));
+}
+
 // Header gets its blurred ground once the page scrolls.
 function initHeadBar() {
   const bar = q('.head-bar');
@@ -219,12 +259,12 @@ function initMenu() {
   });
 }
 
-// Links are written clean (/archive). Only the live host maps those to .html
+// Links are written clean (/zima). Only the live host maps those to .html
 // files, so when the page itself was opened as a .html file (preview, local
 // copy), point links at the files instead.
 function fixLocalLinks() {
   if (!/\.html$/.test(location.pathname) && location.protocol !== 'file:') return;
-  const pages = { '/': 'index.html', '/archive': 'archive.html', '/about': 'about.html', '/zima': 'zima.html' };
+  const pages = { '/': 'index.html', '/zima': 'zima.html' };
   document.querySelectorAll('a[href^="/"]').forEach((el) => {
     const [path, hash] = el.getAttribute('href').split('#');
     if (pages[path]) el.setAttribute('href', pages[path] + (hash ? '#' + hash : ''));
@@ -239,9 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el && window.PROJECTS) el.innerHTML = byNewest(PROJECTS.filter((p) => !!p.showOnHome === home)).map(tpl).join('');
   };
   render('#mainProjects', true, projectHTML);
-  render('#archive', false, archiveRowHTML);
+  render('#archiveList', false, archiveRowHTML);
   fixLocalLinks();
   initToc();
+  initNavSpy();
+  initLazyVideos();
   initHeadBar();
   initReveal();
   initHashScroll();

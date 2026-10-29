@@ -33,8 +33,8 @@
     <a class="head-name" href="/">Maxx Wever<span class="meta">Technical Designer</span></a>
     <nav class="head-nav" id="site-nav">
       <a href="/#work" aria-current="page">Projects</a>
-      <a href="/archive">Archive</a>
-      <a href="/about">About</a>
+      <a href="/#archive">Archive</a>
+      <a href="/#about">About</a>
       <a href="assets/documents/resume.pdf" target="_blank" rel="noopener">Resume</a>
       <button class="theme-toggle nav-theme" type="button" role="switch" aria-checked="false" aria-label="Light mode">
         <span class="sw-label"><span class="sw-dark">Dark mode</span><span class="sw-light">Light mode</span></span>
@@ -94,7 +94,7 @@
           <li>Camera tilts slightly into turns.</li>
           <li>Lock-on that turns the camera towards a nearby point, stronger the closer you get.</li>
         </ul>
-        <figure class="case-figure"><video src="assets/projects/zima/camera-prototype.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Modifier prototype camera in play"></video><figcaption>First prototype, weeks 0–1.</figcaption></figure>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-prototype.mp4#t=0.1" muted loop playsinline preload="metadata" data-lazy aria-label="Modifier prototype camera in play"></video><figcaption>First prototype, weeks 0–1.</figcaption></figure>
       </section>
 
       <section class="case-section reveal" id="iteration-1">
@@ -107,7 +107,7 @@
           <p class="case-label">Solution</p>
           <p>This iteration guides the camera’s facing direction based on player speed and direction. It’s primitive, but does a good job of predicting the default camera view.</p>
         </div>
-        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-1.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Look-ahead camera in play"></video><figcaption>Look-ahead camera following speed and direction.</figcaption></figure>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-1.mp4#t=0.1" muted loop playsinline preload="metadata" data-lazy aria-label="Look-ahead camera in play"></video><figcaption>Look-ahead camera following speed and direction.</figcaption></figure>
       </section>
 
       <section class="case-section reveal" id="iteration-2">
@@ -121,7 +121,7 @@
           <p>This iteration replaces the default camera pitch with a dynamic one. Looking from a bird’s-eye view, the camera stretches out and pulls much further back so the player can see more of their surroundings. Looking from a worm’s-eye view, the camera stays in place instead of moving into the floor and getting pulled in.</p>
           <p>The field of view changes too. The sky is really, really big, so the camera imitates peripheral vision by widening the field of view when looking from a worm’s-eye view.</p>
         </div>
-        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-2.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Dynamic pitch camera in play"></video><figcaption>Camera pulling back from above and widening from below.</figcaption></figure>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-2.mp4#t=0.1" muted loop playsinline preload="metadata" data-lazy aria-label="Dynamic pitch camera in play"></video><figcaption>Camera pulling back from above and widening from below.</figcaption></figure>
       </section>
 
       <section class="case-section reveal" id="iteration-3">
@@ -135,7 +135,7 @@
           <p>A simple but naive approach is to cast a ray from the player to the camera, detect when the player is occluded and push the camera closer immediately. But that is a camera cut, which violates the 30° rule: in cinema, every cut should change the angle by at least 30°, or it creates a jarring sense of motion.</p>
           <p>A much more elegant solution is to turn the camera out of the way before the obstacle gets there. An array of raycasts, called “whiskers”, detects obstacles early. If any whisker hits one, the camera swings away in time.</p>
         </div>
-        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-3.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Obstacle avoidance camera in play"></video><figcaption>Camera swinging around an obstacle.</figcaption></figure>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-3.mp4#t=0.1" muted loop playsinline preload="metadata" data-lazy aria-label="Obstacle avoidance camera in play"></video><figcaption>Camera swinging around an obstacle.</figcaption></figure>
       </section>
 
       <section class="case-section reveal" id="result">
