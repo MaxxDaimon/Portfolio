@@ -8,6 +8,7 @@ My portfolio site. Plain HTML, CSS and JavaScript, no build step. Hosted on GitH
 index.html     Home page
 archive.html   Smaller projects
 about.html     About me and skills
+zima.html      ZIMA project page
 404.html       Page not found
 data.js        All project content
 app.js         Builds the project sections from data.js
@@ -31,6 +32,7 @@ Copy a block in `data.js` and edit it. Leave out any field you don't need.
   video:       '',     // optional .mp4
   link:        '',     // optional, adds a button
   linkLabel:   '',     // button text, default "Read more"
+  page:        '',     // optional project page, e.g. '/zima'; adds a Read more button
 
   role:        'Technical Designer',
   added:       '2026-06',   // newest shows first
@@ -53,7 +55,8 @@ Posters are 16:9, the portrait is square. Videos should stay small, GitHub rejec
 
 - Hero and about text are in `index.html` and `about.html`.
 - The header and footer are copied into every page, so change all of them.
+- A new project page: copy `zima.html`, set `page` in `data.js`, and add the page to `fixLocalLinks` in `app.js` and to `sitemap.xml`.
 - Link to pages without `.html` (`/archive`, `/about`, `/`). GitHub Pages serves them that way.
-- Colours are at the top of `styles.css`.
+- Colors are at the top of `styles.css`.
 - When replacing the favicon, bump the `?v=` number in each page's `<head>`.
 - If the domain changes, update `CNAME`, `sitemap.xml`, `robots.txt` and the URLs in each page's `<head>`.

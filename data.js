@@ -10,6 +10,7 @@ var PROJECTS = [
     description: 'I was the 3Cs designer on ZIMA, a third-person boss-rush adventure where you play as a windsurfing cowboy saving a giant corrupted creature.',
     engine:      'Unreal Engine',
     poster:      'assets/projects/posters/zima-poster.jpg',
+    page:        '/zima',
 
     role:        'Technical Designer',
 

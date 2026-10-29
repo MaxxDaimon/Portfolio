@@ -44,7 +44,9 @@ function projectHTML(p) {
        </div>`
     : '';
 
-  const action = p.link
+  const action = p.page
+    ? `<a class="project-more project-action" href="${p.page}">Read more<span aria-hidden="true">→</span></a>`
+    : p.link
     ? `<a class="btn btn-primary project-action" href="${p.link}" target="_blank" rel="noopener">${p.linkLabel || 'Read more'} ↗</a>`
     : '';
 
@@ -89,6 +91,46 @@ function archiveRowHTML(p) {
     </div>`;
 }
 
+// Table of contents. Each section switches on at a scroll position: when its
+// top reaches a third of the way down the screen. Sections near the end that
+// the page can't scroll that far for share out the last stretch of scroll
+// evenly, so every one gets a turn. Clicking a link scrolls to that same
+// position, so the click and the highlight always agree.
+function initToc() {
+  const links = [...document.querySelectorAll('.case-toc a[href^="#"]')];
+  const secs = links.map((l) => q(l.getAttribute('href')));
+  if (!links.length || secs.some((x) => !x)) return;
+  let stops = [];
+  const measure = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    stops = secs.map((x) => Math.max(0, x.getBoundingClientRect().top + scrollY - innerHeight / 3));
+    const u = stops.findIndex((t) => t > max);
+    if (u > -1) {
+      const base = u ? Math.min(stops[u - 1], max) : 0, n = stops.length - u;
+      for (let i = 0; i < n; i++) stops[u + i] = base + (max - base) * (i + 1) / n;
+    }
+  };
+  let frame;
+  const update = () => {
+    frame = null;
+    let i = 0;
+    stops.forEach((t, k) => { if (scrollY >= t - 2) i = k; });
+    links.forEach((l, k) => l.toggleAttribute('aria-current', k === i));
+  };
+  links.forEach((l, k) => l.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    measure();
+    scrollTo({ top: stops[k] });
+    history.replaceState(null, '', l.getAttribute('href'));
+  }));
+  const refresh = () => { measure(); update(); };
+  refresh();
+  addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
+  addEventListener('resize', refresh);
+  addEventListener('load', refresh);
+  if (window.ResizeObserver) new ResizeObserver(refresh).observe(document.body);
+}
+
 // Newest first, by `added`, else the year in `timeframe`.
 // Array.sort is stable, so equal keys keep their data.js order.
 function byNewest(list) {
@@ -105,6 +147,25 @@ function initReveal() {
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   // Failsafe so content is never left hidden.
   setTimeout(() => document.querySelectorAll('.reveal:not(.in)').forEach((el) => el.classList.add('in')), 1600);
+}
+
+// Projects are rendered by script, so the browser's own jump to #slug runs
+// before they exist. Jump again once rendered and once images have loaded,
+// unless the visitor has already scrolled.
+function initHashScroll() {
+  const el = location.hash && q(location.hash);
+  if (!el) return;
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  let moved = false;
+  const go = () => {
+    if (moved) return;
+    const top = el.getBoundingClientRect().top + scrollY - parseFloat(getComputedStyle(el).scrollMarginTop || 0);
+    scrollTo({ top, behavior: 'instant' });
+  };
+  go();
+  requestAnimationFrame(go);
+  addEventListener('load', () => { go(); setTimeout(() => { moved = true; }, 50); });
+  ['wheel', 'touchstart', 'keydown'].forEach((t) => addEventListener(t, () => { moved = true; }, { once: true, passive: true }));
 }
 
 // Header gets its blurred ground once the page scrolls.
@@ -163,7 +224,7 @@ function initMenu() {
 // copy), point links at the files instead.
 function fixLocalLinks() {
   if (!/\.html$/.test(location.pathname) && location.protocol !== 'file:') return;
-  const pages = { '/': 'index.html', '/archive': 'archive.html', '/about': 'about.html' };
+  const pages = { '/': 'index.html', '/archive': 'archive.html', '/about': 'about.html', '/zima': 'zima.html' };
   document.querySelectorAll('a[href^="/"]').forEach((el) => {
     const [path, hash] = el.getAttribute('href').split('#');
     if (pages[path]) el.setAttribute('href', pages[path] + (hash ? '#' + hash : ''));
@@ -171,7 +232,6 @@ function fixLocalLinks() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  fixLocalLinks();
   initTheme();
   initMenu();
   const render = (sel, home, tpl) => {
@@ -180,6 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   render('#mainProjects', true, projectHTML);
   render('#archive', false, archiveRowHTML);
+  fixLocalLinks();
+  initToc();
   initHeadBar();
   initReveal();
+  initHashScroll();
 });

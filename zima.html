@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZIMA dynamic camera case study · Maxx Wever</title>
+  <meta name="description" content="ZIMA camera case study: goal, iterations and result.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://maxxwever.com/zima">
+  <link rel="canonical" href="https://maxxwever.com/zima">
+  <meta property="og:title" content="ZIMA, Maxx Wever">
+  <meta property="og:description" content="Camera case study: how the ZIMA camera went from first follow camera to final.">
+  <meta property="og:image" content="https://maxxwever.com/assets/projects/posters/zima-poster.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ZIMA, Maxx Wever">
+  <meta name="twitter:description" content="Camera case study: how the ZIMA camera went from first follow camera to final.">
+  <meta name="twitter:image" content="https://maxxwever.com/assets/projects/posters/zima-poster.jpg">
+
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/brand/favicon.png?v=4">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg?v=4">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png?v=4">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page">
+  <div class="head-bar">
+  <header class="wrap head">
+    <a class="head-name" href="/">Maxx Wever<span class="meta">Technical Designer</span></a>
+    <nav class="head-nav" id="site-nav">
+      <a href="/#work" aria-current="page">Projects</a>
+      <a href="/archive">Archive</a>
+      <a href="/about">About</a>
+      <a href="assets/documents/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <button class="theme-toggle nav-theme" type="button" role="switch" aria-checked="false" aria-label="Light mode">
+        <span class="sw-label"><span class="sw-dark">Dark mode</span><span class="sw-light">Light mode</span></span>
+        <span class="switch-track">
+          <span class="switch-ghost"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></span>
+          <span class="switch-knob"><span class="sw-dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></span><span class="sw-light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></span></span>
+        </span>
+      </button>
+    </nav>
+    <div class="head-tools">
+      <button class="theme-toggle" type="button" aria-label="Toggle light and dark mode">
+        <span class="icon-sun"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></span>
+        <span class="icon-moon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></span>
+      </button>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="icon-menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></span>
+        <span class="icon-close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></span>
+      </button>
+    </div>
+  </header>
+  </div>
+
+  <main class="case">
+    <div class="wrap section case-body">
+
+      <nav class="case-toc" aria-label="On this page">
+        <a class="case-back" href="/#work">← All projects</a>
+        <p class="meta">On this page</p>
+        <a href="#goal">Goal</a>
+        <a href="#prototype">Prototype</a>
+        <a href="#iteration-1">Iteration 1: Look-ahead camera</a>
+        <a href="#iteration-2">Iteration 2: Dynamic pitch</a>
+        <a href="#iteration-3">Iteration 3: Obstacle avoidance</a>
+        <a href="#result">Result</a>
+      </nav>
+
+      <div class="case-content">
+      <header class="case-head">
+        <div class="case-titles">
+          <h1 class="case-title">ZIMA<em>.</em></h1>
+          <p class="case-topic"><span class="case-label">Case study</span>Dynamic camera</p>
+        </div>
+      </header>
+
+
+      <section class="case-section reveal" id="goal">
+        <h2>Goal</h2>
+        <p>Create a dynamic camera that always prioritizes player input, yet automatically positions itself to face where the player would already want to look.</p>
+      </section>
+
+      <section class="case-section reveal" id="prototype">
+        <h2>Prototype</h2>
+        <p>Before the team had a build, I prototyped the camera around the boat asset in a personal project. Every camera behavior lived in its own small modifier, which set the direction for all later 3Cs work.</p>
+        <ul class="highlights">
+          <li>Free look on mouse or left stick, and scroll to zoom.</li>
+          <li>Field of view widens with speed.</li>
+          <li>Camera tilts slightly into turns.</li>
+          <li>Lock-on that turns the camera towards a nearby point, stronger the closer you get.</li>
+        </ul>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-prototype.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Modifier prototype camera in play"></video><figcaption>First prototype, weeks 0–1.</figcaption></figure>
+      </section>
+
+      <section class="case-section reveal" id="iteration-1">
+        <h2>Iteration 1: Look-ahead camera</h2>
+        <div class="case-problem">
+          <p class="case-label">Problem</p>
+          <p>The prototype camera required me to manually shift sides to test if certain camera angles looked right, but it didn’t naturally guide me as a player.</p>
+        </div>
+        <div class="case-solution">
+          <p class="case-label">Solution</p>
+          <p>This iteration guides the camera’s facing direction based on player speed and direction. It’s primitive, but does a good job of predicting the default camera view.</p>
+        </div>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-1.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Look-ahead camera in play"></video><figcaption>Look-ahead camera following speed and direction.</figcaption></figure>
+      </section>
+
+      <section class="case-section reveal" id="iteration-2">
+        <h2>Iteration 2: Dynamic pitch</h2>
+        <div class="case-problem">
+          <p class="case-label">Problem</p>
+          <p>When the player moves their camera to a bird’s-eye view, they can barely see anything because the camera is too close. From a worm’s-eye view, they can barely see anything either, because the camera tries to avoid the floor and shoves itself into the boat.</p>
+        </div>
+        <div class="case-solution">
+          <p class="case-label">Solution</p>
+          <p>This iteration replaces the default camera pitch with a dynamic one. Looking from a bird’s-eye view, the camera stretches out and pulls much further back so the player can see more of their surroundings. Looking from a worm’s-eye view, the camera stays in place instead of moving into the floor and getting pulled in.</p>
+          <p>The field of view changes too. The sky is really, really big, so the camera imitates peripheral vision by widening the field of view when looking from a worm’s-eye view.</p>
+        </div>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-2.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Dynamic pitch camera in play"></video><figcaption>Camera pulling back from above and widening from below.</figcaption></figure>
+      </section>
+
+      <section class="case-section reveal" id="iteration-3">
+        <h2>Iteration 3: Obstacle avoidance</h2>
+        <div class="case-problem">
+          <p class="case-label">Problem</p>
+          <p>When an obstacle stands between the player and the camera, it cuts through the camera’s boom arm and pulls the camera in, which gets the camera stuck inside the obstacle.</p>
+        </div>
+        <div class="case-solution">
+          <p class="case-label">Solution</p>
+          <p>A simple but naive approach is to cast a ray from the player to the camera, detect when the player is occluded and push the camera closer immediately. But that is a camera cut, which violates the 30° rule: in cinema, every cut should change the angle by at least 30°, or it creates a jarring sense of motion.</p>
+          <p>A much more elegant solution is to turn the camera out of the way before the obstacle gets there. An array of raycasts, called “whiskers”, detects obstacles early. If any whisker hits one, the camera swings away in time.</p>
+        </div>
+        <figure class="case-figure"><video src="assets/projects/zima/camera-iteration-3.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Obstacle avoidance camera in play"></video><figcaption>Camera swinging around an obstacle.</figcaption></figure>
+      </section>
+
+      <section class="case-section reveal" id="result">
+        <h2>Result</h2>
+        <p>The final camera leaves the player in control, steers towards where they should go when they let go, and stays out of walls and the floor. Each feature is a separate modifier, so it was easy to tune and extend right up to release.</p>
+        <h3>What I learned</h3>
+        <ul class="highlights">
+          <li>Look-ahead: a camera should show where the player is going, not just where they are. Speed and direction alone are enough to predict a good default view.</li>
+          <li>Dynamic pitch: one fixed boom length can’t serve every angle. Pulling back from above and widening the field of view from below keeps the player’s surroundings readable.</li>
+          <li>Obstacle avoidance: avoid camera cuts that break the 30° rule. Detecting obstacles early with whiskers lets the camera swing away smoothly instead of snapping in.</li>
+          <li>Giving each modifier its own degree of freedom (roll, pitch, yaw, X, Y, Z and field of view), applied once at the end of each tick, stopped modifiers overriding each other.</li>
+          <li>The biggest resource when building this camera system was John Nesky’s GDC talk “50 Game Camera Mistakes”.</li>
+        </ul>
+      </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="wrap foot">
+    <a class="foot-link" href="mailto:MaxxWever@outlook.com" aria-label="Email"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></a>
+    <a class="foot-link" href="https://www.linkedin.com/in/maxx-wever-9649b9290/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
